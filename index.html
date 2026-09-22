@@ -3,25 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapa de Medios de América Latina</title>
+<title>Mapa de Medios de América Latina y el Caribe</title>
 <style>
   :root {
-    --bg: #0f1419;
-    --panel: #1a2129;
-    --panel-2: #232c36;
-    --border: #2d3743;
-    --text: #e8eef5;
-    --muted: #8a99ab;
-    --accent: #5eb3ff;
-    --accent-2: #ffb86b;
-    --izq: #e57373;
-    --centro-izq: #ffb074;
-    --centro: #a0a0a0;
-    --centro-der: #74c0fc;
-    --der: #5e9eff;
-    --indep: #81c784;
-    --estatal: #ba9bff;
-    --invest: #ffd54f;
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --accent: #2563eb;
+    --accent-2: #ea580c;
+    --izq: #dc2626;
+    --centro-izq: #f97316;
+    --centro: #6b7280;
+    --centro-der: #3b82f6;
+    --der: #1e3a8a;
+    --indep: #16a34a;
+    --estatal: #7c3aed;
+    --invest: #ca8a04;
+    --sea: #e0f2fe;
+    --land-0: #f1f5f9;
+    --land-1: #dbeafe;
+    --land-2: #93c5fd;
+    --land-3: #3b82f6;
+    --land-4: #1e40af;
   }
   * { box-sizing: border-box; }
   body {
@@ -32,14 +38,15 @@
     line-height: 1.5;
   }
   header {
-    padding: 24px 32px 16px;
+    padding: 28px 32px 20px;
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, #131a22 0%, #0f1419 100%);
+    background: var(--panel);
   }
   header h1 {
-    margin: 0 0 4px;
-    font-size: 24px;
-    font-weight: 600;
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
   }
   header p {
     margin: 0;
@@ -51,20 +58,17 @@
     flex-wrap: wrap;
     gap: 12px;
     padding: 16px 32px;
-    background: var(--panel);
+    background: var(--panel-2);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 10;
   }
-  .search {
-    flex: 1;
-    min-width: 240px;
-  }
+  .search { flex: 1; min-width: 240px; }
   input[type="text"], select {
     width: 100%;
     padding: 10px 12px;
-    background: var(--panel-2);
+    background: #fff;
     border: 1px solid var(--border);
     color: var(--text);
     border-radius: 6px;
@@ -74,10 +78,9 @@
   input[type="text"]:focus, select:focus {
     outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
   }
-  .filter-group {
-    min-width: 160px;
-  }
+  .filter-group { min-width: 160px; }
   .filter-group label {
     display: block;
     font-size: 11px;
@@ -85,6 +88,7 @@
     margin-bottom: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-weight: 600;
   }
   .stats {
     padding: 12px 32px;
@@ -94,6 +98,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: var(--panel);
   }
   .stats button {
     background: transparent;
@@ -105,10 +110,140 @@
     font-size: 12px;
     font-family: inherit;
   }
-  .stats button:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+  .stats button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* MAP */
+  .map-section {
+    padding: 24px 32px 28px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
   }
+  .map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .map-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .map-toggle {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .map-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .map-wrap { max-width: 1100px; margin: 0 auto; }
+  .map-wrap.collapsed { display: none; }
+  .map-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: var(--sea);
+    border-radius: 8px;
+  }
+  .country {
+    fill: var(--land-0);
+    stroke: #ffffff;
+    stroke-width: 1;
+    cursor: pointer;
+    transition: fill 0.15s, stroke 0.15s;
+  }
+  .country:hover { stroke: var(--accent); stroke-width: 2; }
+  .country.active { stroke: var(--accent-2); stroke-width: 2.5; }
+  .country-label {
+    font-size: 9px;
+    font-weight: 600;
+    fill: #1e293b;
+    text-anchor: middle;
+    pointer-events: none;
+    user-select: none;
+  }
+  .country-label.dark { fill: #ffffff; }
+  .country-count {
+    font-size: 8px;
+    font-weight: 500;
+    fill: #334155;
+    text-anchor: middle;
+    pointer-events: none;
+    user-select: none;
+  }
+  .country-count.dark { fill: rgba(255,255,255,0.85); }
+  .map-legend {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--muted);
+    align-items: center;
+  }
+  .legend-scale { display: flex; align-items: center; gap: 4px; }
+  .legend-scale i { width: 18px; height: 12px; display: inline-block; border: 1px solid #cbd5e1; }
+
+  /* SIDEBAR PANEL */
+  .side-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 380px;
+    max-width: 92vw;
+    height: 100vh;
+    background: #fff;
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 24px rgba(15,23,42,0.12);
+    padding: 24px 22px;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.28s ease;
+    z-index: 100;
+  }
+  .side-panel.open { transform: translateX(0); }
+  .side-panel h3 { margin: 0 0 4px; font-size: 20px; display: flex; align-items: center; gap: 10px; }
+  .side-panel .close {
+    position: absolute; top: 14px; right: 14px;
+    background: none; border: none; font-size: 22px; color: var(--muted);
+    cursor: pointer; padding: 4px 10px; border-radius: 4px;
+  }
+  .side-panel .close:hover { background: var(--panel-2); }
+  .side-summary {
+    color: var(--muted); font-size: 13px; margin: 4px 0 18px;
+  }
+  .side-chart {
+    display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 8px;
+    background: var(--panel-2);
+  }
+  .side-chart-legend {
+    display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px; color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .side-chart-legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .side-chart-legend i { width: 10px; height: 10px; border-radius: 2px; }
+  .side-media { border-top: 1px solid var(--border); padding-top: 12px; }
+  .side-media h4 { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .side-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--panel-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .side-item:last-child { border-bottom: none; }
+  .side-item a { color: var(--text); text-decoration: none; font-weight: 500; font-size: 14px; }
+  .side-item a:hover { color: var(--accent); }
+  .side-item .tag { font-size: 10px; padding: 1px 6px; border-radius: 8px; }
+
   .country-section {
     padding: 24px 32px;
     border-bottom: 1px solid var(--border);
@@ -121,10 +256,8 @@
     align-items: center;
     gap: 10px;
   }
-  .country-flag {
-    font-size: 22px;
-  }
-  .country-count {
+  .country-flag { font-size: 22px; }
+  .country-count-sec {
     font-size: 12px;
     color: var(--muted);
     font-weight: normal;
@@ -144,7 +277,7 @@
   }
   .card:hover {
     border-color: var(--accent);
-    background: var(--panel-2);
+    box-shadow: 0 4px 12px rgba(37,99,235,0.08);
   }
   .card-header {
     display: flex;
@@ -153,19 +286,9 @@
     gap: 8px;
     margin-bottom: 8px;
   }
-  .card-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    margin: 0;
-  }
-  .card-name a {
-    color: inherit;
-    text-decoration: none;
-  }
-  .card-name a:hover {
-    color: var(--accent);
-  }
+  .card-name { font-size: 15px; font-weight: 600; margin: 0; }
+  .card-name a { color: inherit; text-decoration: none; }
+  .card-name a:hover { color: var(--accent); }
   .fav {
     background: none;
     border: none;
@@ -191,140 +314,41 @@
     border: 1px solid var(--border);
     white-space: nowrap;
   }
-  .tag.linea-izquierda { background: rgba(229,115,115,0.15); color: var(--izq); border-color: rgba(229,115,115,0.3); }
-  .tag.linea-centro-izquierda { background: rgba(255,176,116,0.15); color: var(--centro-izq); border-color: rgba(255,176,116,0.3); }
-  .tag.linea-centro { background: rgba(160,160,160,0.15); color: var(--centro); border-color: rgba(160,160,160,0.3); }
-  .tag.linea-centro-derecha { background: rgba(116,192,252,0.15); color: var(--centro-der); border-color: rgba(116,192,252,0.3); }
-  .tag.linea-derecha { background: rgba(94,158,255,0.15); color: var(--der); border-color: rgba(94,158,255,0.3); }
-  .tag.linea-independiente { background: rgba(129,199,132,0.15); color: var(--indep); border-color: rgba(129,199,132,0.3); }
-  .tag.linea-estatal { background: rgba(186,155,255,0.15); color: var(--estatal); border-color: rgba(186,155,255,0.3); }
-  .tag.linea-investigación { background: rgba(255,213,79,0.15); color: var(--invest); border-color: rgba(255,213,79,0.3); }
-  .card-desc {
-    font-size: 13px;
-    color: var(--muted);
-    margin: 0;
-  }
-  .empty {
-    padding: 60px 32px;
-    text-align: center;
-    color: var(--muted);
-  }
+  .tag.linea-izquierda { background: rgba(220,38,38,0.10); color: var(--izq); border-color: rgba(220,38,38,0.25); }
+  .tag.linea-centro-izquierda { background: rgba(249,115,22,0.10); color: var(--centro-izq); border-color: rgba(249,115,22,0.25); }
+  .tag.linea-centro { background: rgba(107,114,128,0.10); color: var(--centro); border-color: rgba(107,114,128,0.25); }
+  .tag.linea-centro-derecha { background: rgba(59,130,246,0.10); color: var(--centro-der); border-color: rgba(59,130,246,0.25); }
+  .tag.linea-derecha { background: rgba(30,58,138,0.10); color: var(--der); border-color: rgba(30,58,138,0.25); }
+  .tag.linea-independiente { background: rgba(22,163,74,0.10); color: var(--indep); border-color: rgba(22,163,74,0.25); }
+  .tag.linea-estatal { background: rgba(124,58,237,0.10); color: var(--estatal); border-color: rgba(124,58,237,0.25); }
+  .tag.linea-investigación { background: rgba(202,138,4,0.10); color: var(--invest); border-color: rgba(202,138,4,0.25); }
+  .card-desc { font-size: 13px; color: var(--muted); margin: 0; }
+  .empty { padding: 60px 32px; text-align: center; color: var(--muted); }
   footer {
     padding: 24px 32px;
     text-align: center;
     color: var(--muted);
     font-size: 12px;
     border-top: 1px solid var(--border);
+    background: var(--panel-2);
   }
-  /* MAP */
-  .map-section {
-    padding: 24px 32px;
-    background: linear-gradient(180deg, #0f1419 0%, #131a22 100%);
-    border-bottom: 1px solid var(--border);
-  }
-  .map-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  .map-header h2 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-  }
-  .map-toggle {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    font-family: inherit;
-  }
-  .map-toggle:hover { color: var(--accent); border-color: var(--accent); }
-  .map-wrap {
-    width: 100%;
-    max-width: 720px;
-    margin: 0 auto;
-  }
-  .map-wrap.collapsed { display: none; }
-  .map-svg {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .map-tile {
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .map-tile rect {
-    fill: var(--panel);
-    stroke: var(--border);
-    stroke-width: 1;
-    transition: all 0.15s;
-  }
-  .map-tile:hover rect {
-    fill: var(--panel-2);
-    stroke: var(--accent);
-    stroke-width: 2;
-  }
-  .map-tile.active rect {
-    fill: rgba(94,179,255,0.15);
-    stroke: var(--accent);
-    stroke-width: 2;
-  }
-  .map-tile text {
-    pointer-events: none;
-    user-select: none;
-  }
-  .map-flag {
-    font-size: 18px;
-    text-anchor: middle;
-    dominant-baseline: central;
-  }
-  .map-code {
-    font-size: 9px;
-    font-weight: 600;
-    text-anchor: middle;
-    fill: var(--text);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .map-count {
-    font-size: 10px;
-    font-weight: 700;
-    text-anchor: middle;
-    fill: var(--accent);
-  }
-  .map-legend {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 12px;
-    flex-wrap: wrap;
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .map-legend span { display: inline-flex; align-items: center; gap: 4px; }
-  .map-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     header, .controls, .stats, .country-section, .map-section, footer { padding-left: 16px; padding-right: 16px; }
     .grid { grid-template-columns: 1fr; }
+    .side-panel { width: 100vw; }
   }
 </style>
 </head>
 <body>
- 
+
 <header>
-  <h1>Mapa de Medios de América Latina</h1>
-  <p>Tu red local de información. Filtrá por país, línea editorial, tipo, o buscá por nombre. Marcá tus favoritos con la estrella — se guardan en este navegador.</p>
+  <h1>Mapa de Medios de América Latina y el Caribe</h1>
+  <p>Tu red local de información. Filtra por país, línea editorial o tipo. Haz clic en un país del mapa para ver su ficha completa.</p>
 </header>
- 
+
 <div class="controls">
   <div class="search">
-    <label for="search" style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Buscar</label>
+    <label for="search" style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Buscar</label>
     <input type="text" id="search" placeholder="Nombre del medio, palabra clave...">
   </div>
   <div class="filter-group">
@@ -347,292 +371,381 @@
     </select>
   </div>
 </div>
- 
+
 <section class="map-section">
   <div class="map-header">
-    <h2>🗺️ Mapa de la región</h2>
+    <h2>🗺️ Mapa político de la región</h2>
     <button class="map-toggle" id="map-toggle">Ocultar mapa</button>
   </div>
   <div class="map-wrap" id="map-wrap">
-    <svg class="map-svg" viewBox="0 0 720 900" xmlns="http://www.w3.org/2000/svg">
-      <!-- background subtle gradient -->
-      <defs>
-        <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#131a22" stop-opacity="0.5"/>
-          <stop offset="100%" stop-color="#0f1419" stop-opacity="0.2"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="720" height="900" fill="url(#bgGrad)" rx="8"/>
-      <!-- subtle compass label -->
-      <text x="40" y="40" fill="#3d4854" font-size="11" font-family="-apple-system, sans-serif">N ↑</text>
-      <!-- country tiles will be injected here -->
-      <g id="map-tiles"></g>
-    </svg>
+    <svg class="map-svg" id="map-svg" viewBox="0 0 720 820" xmlns="http://www.w3.org/2000/svg"></svg>
     <div class="map-legend">
-      <span><i style="background:var(--panel);border:1px solid var(--border);"></i>Sin filtro</span>
-      <span><i style="background:rgba(94,179,255,0.15);border:1px solid var(--accent);"></i>País seleccionado</span>
-      <span>Número = cantidad de medios</span>
+      <span>Densidad de medios:</span>
+      <span class="legend-scale">
+        <i style="background:var(--land-0)"></i>
+        <i style="background:var(--land-1)"></i>
+        <i style="background:var(--land-2)"></i>
+        <i style="background:var(--land-3)"></i>
+        <i style="background:var(--land-4)"></i>
+      </span>
+      <span>menor → mayor</span>
+      <span style="margin-left:12px">Haz clic en un país para ver su ficha</span>
     </div>
   </div>
 </section>
- 
+
 <div class="stats">
   <span id="count">—</span>
   <button id="reset">Limpiar filtros</button>
 </div>
- 
+
 <main id="results"></main>
- 
+
+<aside class="side-panel" id="side-panel">
+  <button class="close" id="side-close">✕</button>
+  <h3 id="side-title">País</h3>
+  <p class="side-summary" id="side-summary"></p>
+  <div class="side-chart" id="side-chart"></div>
+  <div class="side-chart-legend" id="side-chart-legend"></div>
+  <div class="side-media">
+    <h4>Medios (<span id="side-count">0</span>)</h4>
+    <div id="side-list"></div>
+  </div>
+</aside>
+
 <footer>
-  Datos al 2026. Las clasificaciones de línea editorial son orientativas y pueden cambiar con el tiempo o según la sección del medio.<br>
-  Las estrellas y filtros se guardan localmente en este navegador.
+  Datos actualizados a 2026. Las clasificaciones editoriales son orientativas y pueden variar según la sección del medio.<br>
+  Favoritos y filtros se guardan localmente en este navegador.
 </footer>
- 
+
 <script>
+// ============ DATOS ============
 const MEDIOS = [
   // ARGENTINA
   {pais:"Argentina", nombre:"Clarín", tipo:"Diario", linea:"Centro-derecha", web:"https://www.clarin.com", desc:"Diario más leído del país. Buque insignia del Grupo Clarín."},
-  {pais:"Argentina", nombre:"La Nación", tipo:"Diario", linea:"Derecha", web:"https://www.lanacion.com.ar", desc:"Histórico diario conservador-liberal. Propiedad de la familia Saguier-Mitre."},
+  {pais:"Argentina", nombre:"La Nación", tipo:"Diario", linea:"Derecha", web:"https://www.lanacion.com.ar", desc:"Histórico diario conservador-liberal. Familia Saguier-Mitre."},
   {pais:"Argentina", nombre:"Página/12", tipo:"Diario", linea:"Izquierda", web:"https://www.pagina12.com.ar", desc:"Diario kirchnerista, fundado en 1987 con línea progresista."},
   {pais:"Argentina", nombre:"Infobae", tipo:"Digital", linea:"Centro-derecha", web:"https://www.infobae.com", desc:"Portal digital más leído del país. De Daniel Hadad."},
-  {pais:"Argentina", nombre:"Perfil", tipo:"Diario", linea:"Centro", web:"https://www.perfil.com", desc:"Editorial Perfil de Jorge Fontevecchia. Diario y revista semanal Noticias."},
+  {pais:"Argentina", nombre:"Perfil", tipo:"Diario", linea:"Centro", web:"https://www.perfil.com", desc:"Editorial Perfil de Jorge Fontevecchia. Diario y revista Noticias."},
   {pais:"Argentina", nombre:"Ámbito Financiero", tipo:"Económico", linea:"Centro-derecha", web:"https://www.ambito.com", desc:"Especializado en economía y finanzas."},
   {pais:"Argentina", nombre:"El Cronista", tipo:"Económico", linea:"Centro-derecha", web:"https://www.cronista.com", desc:"Diario económico-empresarial."},
-  {pais:"Argentina", nombre:"elDiarioAR", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.eldiarioar.com", desc:"Versión argentina del español elDiario.es. Independiente, lectura por suscripción."},
-  {pais:"Argentina", nombre:"Cenital", tipo:"Newsletter", linea:"Centro", web:"https://cenital.com", desc:"Newsletter financiado por lectores. Foco en política y economía explicada."},
-  {pais:"Argentina", nombre:"El Cohete a la Luna", tipo:"Digital", linea:"Izquierda", web:"https://www.elcohetealaluna.com", desc:"Portal de Horacio Verbitsky. Periodismo de investigación con mirada progresista."},
+  {pais:"Argentina", nombre:"elDiarioAR", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.eldiarioar.com", desc:"Versión argentina de elDiario.es. Independiente por suscripción."},
+  {pais:"Argentina", nombre:"Cenital", tipo:"Newsletter", linea:"Centro", web:"https://cenital.com", desc:"Newsletter financiado por lectores. Política y economía explicada."},
+  {pais:"Argentina", nombre:"El Cohete a la Luna", tipo:"Digital", linea:"Izquierda", web:"https://www.elcohetealaluna.com", desc:"Portal de Horacio Verbitsky, investigación progresista."},
   {pais:"Argentina", nombre:"Tiempo Argentino", tipo:"Diario", linea:"Centro-izquierda", web:"https://www.tiempoar.com.ar", desc:"Cooperativa de trabajadores, línea progresista."},
   {pais:"Argentina", nombre:"La Voz del Interior", tipo:"Diario", linea:"Centro", web:"https://www.lavoz.com.ar", desc:"Principal diario de Córdoba. Grupo Clarín."},
   {pais:"Argentina", nombre:"Río Negro", tipo:"Diario", linea:"Centro", web:"https://www.rionegro.com.ar", desc:"Principal diario de la Patagonia."},
   {pais:"Argentina", nombre:"TN", tipo:"TV", linea:"Centro-derecha", web:"https://tn.com.ar", desc:"Canal de noticias del Grupo Clarín."},
-  {pais:"Argentina", nombre:"C5N", tipo:"TV", linea:"Izquierda", web:"https://www.c5n.com", desc:"Canal de noticias kirchnerista, del Grupo Indalo."},
+  {pais:"Argentina", nombre:"C5N", tipo:"TV", linea:"Izquierda", web:"https://www.c5n.com", desc:"Canal de noticias kirchnerista, Grupo Indalo."},
   {pais:"Argentina", nombre:"LN+", tipo:"TV", linea:"Derecha", web:"https://www.lanacionmas.com", desc:"Canal de noticias de La Nación."},
-  {pais:"Argentina", nombre:"Radio Mitre", tipo:"Radio", linea:"Centro-derecha", web:"https://radiomitre.cienradios.com", desc:"AM líder. Grupo Clarín. Programa de Lanata y Longobardi."},
-  {pais:"Argentina", nombre:"Radio Con Vos", tipo:"Radio", linea:"Centro", web:"https://www.radioconvos.com.ar", desc:"FM con periodismo de buen tono. Reynaldo Sietecase, Ernesto Tenembaum."},
+  {pais:"Argentina", nombre:"Radio Mitre", tipo:"Radio", linea:"Centro-derecha", web:"https://radiomitre.cienradios.com", desc:"AM líder. Grupo Clarín."},
+  {pais:"Argentina", nombre:"Radio Con Vos", tipo:"Radio", linea:"Centro", web:"https://www.radioconvos.com.ar", desc:"FM con Sietecase, Tenembaum y compañía."},
   {pais:"Argentina", nombre:"Chequeado", tipo:"Verificación", linea:"Independiente", web:"https://chequeado.com", desc:"Pionero en fact-checking en América Latina."},
   {pais:"Argentina", nombre:"Revista Anfibia", tipo:"Revista", linea:"Centro-izquierda", web:"https://www.revistaanfibia.com", desc:"Crónica y ensayo de larga forma. UNSAM."},
- 
+  // BAHAMAS
+  {pais:"Bahamas", nombre:"The Tribune", tipo:"Diario", linea:"Centro", web:"http://www.tribune242.com", desc:"El diario más antiguo del país, fundado en 1903."},
+  {pais:"Bahamas", nombre:"The Nassau Guardian", tipo:"Diario", linea:"Centro", web:"https://thenassauguardian.com", desc:"Diario de referencia en Nasáu."},
+  {pais:"Bahamas", nombre:"Eyewitness News", tipo:"Digital/TV", linea:"Centro", web:"https://ewnews.com", desc:"Portal y canal de noticias en Nasáu."},
+  // BARBADOS
+  {pais:"Barbados", nombre:"Nation News", tipo:"Diario", linea:"Centro", web:"https://www.nationnews.com", desc:"Principal diario del país."},
+  {pais:"Barbados", nombre:"Barbados Today", tipo:"Digital", linea:"Centro", web:"https://barbadostoday.bb", desc:"Portal digital de noticias."},
+  {pais:"Barbados", nombre:"Barbados Advocate", tipo:"Diario", linea:"Centro", web:"https://www.barbadosadvocate.com", desc:"Diario histórico."},
+  // BELICE
+  {pais:"Belice", nombre:"Amandala", tipo:"Diario", linea:"Centro-izquierda", web:"https://amandala.com.bz", desc:"Diario más leído del país, en inglés."},
+  {pais:"Belice", nombre:"The Reporter", tipo:"Semanario", linea:"Centro", web:"https://www.reporter.bz", desc:"Semanario tradicional."},
+  {pais:"Belice", nombre:"Channel 5 Belize", tipo:"TV", linea:"Centro", web:"https://edition.channel5belize.com", desc:"Principal canal informativo."},
+  {pais:"Belice", nombre:"BreakingBelizeNews", tipo:"Digital", linea:"Centro", web:"https://www.breakingbelizenews.com", desc:"Portal de noticias actualizadas."},
   // BOLIVIA
-  {pais:"Bolivia", nombre:"El Deber", tipo:"Diario", linea:"Centro-derecha", web:"https://eldeber.com.bo", desc:"Principal diario de Santa Cruz. Crítico de gobiernos del MAS."},
+  {pais:"Bolivia", nombre:"El Deber", tipo:"Diario", linea:"Centro-derecha", web:"https://eldeber.com.bo", desc:"Principal diario de Santa Cruz. Crítico del MAS."},
   {pais:"Bolivia", nombre:"Los Tiempos", tipo:"Diario", linea:"Centro", web:"https://www.lostiempos.com", desc:"Diario de Cochabamba."},
   {pais:"Bolivia", nombre:"La Razón", tipo:"Diario", linea:"Centro", web:"https://www.la-razon.com", desc:"Diario de La Paz."},
   {pais:"Bolivia", nombre:"Brújula Digital", tipo:"Digital", linea:"Centro", web:"https://brujuladigital.net", desc:"Portal independiente con análisis político."},
-  {pais:"Bolivia", nombre:"Erbol", tipo:"Radio/Digital", linea:"Centro", web:"https://erbol.com.bo", desc:"Red de radios educativas. Cobertura amplia del país."},
+  {pais:"Bolivia", nombre:"Erbol", tipo:"Radio/Digital", linea:"Centro", web:"https://erbol.com.bo", desc:"Red de radios educativas."},
   {pais:"Bolivia", nombre:"Bolivia Verifica", tipo:"Verificación", linea:"Independiente", web:"https://boliviaverifica.bo", desc:"Fact-checking boliviano."},
-  {pais:"Bolivia", nombre:"ANF", tipo:"Agencia", linea:"Centro", web:"https://www.noticiasfides.com", desc:"Agencia Noticias Fides. Tradición jesuita, independiente."},
+  {pais:"Bolivia", nombre:"ANF", tipo:"Agencia", linea:"Centro", web:"https://www.noticiasfides.com", desc:"Agencia Noticias Fides. Tradición jesuita."},
   {pais:"Bolivia", nombre:"El País Tarija", tipo:"Diario", linea:"Centro", web:"https://elpais.bo", desc:"Principal diario del sur boliviano."},
- 
   // BRASIL
-  {pais:"Brasil", nombre:"Folha de S.Paulo", tipo:"Diario", linea:"Centro", web:"https://www.folha.uol.com.br", desc:"Diario más influyente del país. Línea liberal-progresista en lo social."},
-  {pais:"Brasil", nombre:"O Globo", tipo:"Diario", linea:"Centro-derecha", web:"https://oglobo.globo.com", desc:"Diario insignia del Grupo Globo, basado en Río."},
-  {pais:"Brasil", nombre:"O Estado de S. Paulo", tipo:"Diario", linea:"Centro-derecha", web:"https://www.estadao.com.br", desc:"Estadão. Conservador-liberal, uno de los más antiguos del país."},
-  {pais:"Brasil", nombre:"Veja", tipo:"Revista", linea:"Centro-derecha", web:"https://veja.abril.com.br", desc:"Revista semanal de mayor circulación. Línea liberal-conservadora."},
+  {pais:"Brasil", nombre:"Folha de S.Paulo", tipo:"Diario", linea:"Centro", web:"https://www.folha.uol.com.br", desc:"El diario más influyente. Línea liberal-progresista en lo social."},
+  {pais:"Brasil", nombre:"O Globo", tipo:"Diario", linea:"Centro-derecha", web:"https://oglobo.globo.com", desc:"Diario insignia del Grupo Globo, en Río."},
+  {pais:"Brasil", nombre:"O Estado de S. Paulo", tipo:"Diario", linea:"Centro-derecha", web:"https://www.estadao.com.br", desc:"Estadão. Conservador-liberal, uno de los más antiguos."},
+  {pais:"Brasil", nombre:"Veja", tipo:"Revista", linea:"Centro-derecha", web:"https://veja.abril.com.br", desc:"Revista semanal de mayor circulación."},
   {pais:"Brasil", nombre:"CartaCapital", tipo:"Revista", linea:"Izquierda", web:"https://www.cartacapital.com.br", desc:"Revista de izquierda fundada por Mino Carta."},
   {pais:"Brasil", nombre:"Piauí", tipo:"Revista", linea:"Centro-izquierda", web:"https://piaui.folha.uol.com.br", desc:"Revista de periodismo narrativo de larga forma."},
   {pais:"Brasil", nombre:"Agência Pública", tipo:"Investigación", linea:"Investigación", web:"https://apublica.org", desc:"Agencia independiente de periodismo de investigación."},
-  {pais:"Brasil", nombre:"The Intercept Brasil", tipo:"Digital", linea:"Izquierda", web:"https://theintercept.com/brasil/", desc:"Investigación crítica. Reveló los chats de la Lava Jato."},
-  {pais:"Brasil", nombre:"Nexo", tipo:"Digital", linea:"Centro", web:"https://www.nexojornal.com.br", desc:"Periodismo explicativo con énfasis en datos. Por suscripción."},
+  {pais:"Brasil", nombre:"The Intercept Brasil", tipo:"Digital", linea:"Izquierda", web:"https://theintercept.com/brasil/", desc:"Reveló los chats de la Lava Jato."},
+  {pais:"Brasil", nombre:"Nexo", tipo:"Digital", linea:"Centro", web:"https://www.nexojornal.com.br", desc:"Periodismo explicativo con datos. Por suscripción."},
   {pais:"Brasil", nombre:"UOL", tipo:"Portal", linea:"Centro", web:"https://www.uol.com.br", desc:"Portal mayor de internet en Brasil. Grupo Folha."},
   {pais:"Brasil", nombre:"G1", tipo:"Portal/TV", linea:"Centro-derecha", web:"https://g1.globo.com", desc:"Portal de Globo, audiencia masiva."},
-  {pais:"Brasil", nombre:"Jovem Pan", tipo:"Radio/TV", linea:"Derecha", web:"https://jovempan.com.br", desc:"Tomó perfil bolsonarista desde 2018."},
+  {pais:"Brasil", nombre:"Jovem Pan", tipo:"Radio/TV", linea:"Derecha", web:"https://jovempan.com.br", desc:"Perfil bolsonarista desde 2018."},
   {pais:"Brasil", nombre:"Brasil de Fato", tipo:"Digital", linea:"Izquierda", web:"https://www.brasildefato.com.br", desc:"Asociado al MST y movimientos sociales."},
   {pais:"Brasil", nombre:"Poder360", tipo:"Digital", linea:"Centro-derecha", web:"https://www.poder360.com.br", desc:"Foco en política, encuestas, datos."},
-  {pais:"Brasil", nombre:"Metrópoles", tipo:"Digital", linea:"Centro", web:"https://www.metropoles.com", desc:"Portal con sede en Brasilia, fuerte en política."},
+  {pais:"Brasil", nombre:"Metrópoles", tipo:"Digital", linea:"Centro", web:"https://www.metropoles.com", desc:"Portal con sede en Brasilia."},
   {pais:"Brasil", nombre:"Agência Lupa", tipo:"Verificación", linea:"Independiente", web:"https://lupa.uol.com.br", desc:"Principal agencia de fact-checking brasileña."},
- 
   // CHILE
-  {pais:"Chile", nombre:"El Mercurio", tipo:"Diario", linea:"Derecha", web:"https://www.emol.com", desc:"Decano de la prensa chilena, conservador-liberal. Grupo Edwards."},
-  {pais:"Chile", nombre:"La Tercera", tipo:"Diario", linea:"Centro-derecha", web:"https://www.latercera.com", desc:"Diario del grupo Copesa. Centro-derecha más moderado."},
-  {pais:"Chile", nombre:"The Clinic", tipo:"Revista/Digital", linea:"Izquierda", web:"https://www.theclinic.cl", desc:"Tono satírico y crítico. Cultura, política, humor."},
-  {pais:"Chile", nombre:"CIPER", tipo:"Investigación", linea:"Investigación", web:"https://www.ciperchile.cl", desc:"Centro de Investigación e Información Periodística. Referencia regional."},
+  {pais:"Chile", nombre:"El Mercurio", tipo:"Diario", linea:"Derecha", web:"https://www.emol.com", desc:"Decano de la prensa chilena. Grupo Edwards."},
+  {pais:"Chile", nombre:"La Tercera", tipo:"Diario", linea:"Centro-derecha", web:"https://www.latercera.com", desc:"Grupo Copesa. Centro-derecha más moderado."},
+  {pais:"Chile", nombre:"The Clinic", tipo:"Revista/Digital", linea:"Izquierda", web:"https://www.theclinic.cl", desc:"Tono satírico y crítico."},
+  {pais:"Chile", nombre:"CIPER", tipo:"Investigación", linea:"Investigación", web:"https://www.ciperchile.cl", desc:"Referencia regional en investigación."},
   {pais:"Chile", nombre:"BioBioChile", tipo:"Radio/Digital", linea:"Centro", web:"https://www.biobiochile.cl", desc:"Radio y portal de mayor cobertura regional."},
-  {pais:"Chile", nombre:"Interferencia", tipo:"Digital", linea:"Izquierda", web:"https://interferencia.cl", desc:"Cooperativa periodística, investigación crítica."},
-  {pais:"Chile", nombre:"El Mostrador", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.elmostrador.cl", desc:"Primer diario digital de Chile. Análisis político."},
+  {pais:"Chile", nombre:"Interferencia", tipo:"Digital", linea:"Izquierda", web:"https://interferencia.cl", desc:"Cooperativa periodística de investigación."},
+  {pais:"Chile", nombre:"El Mostrador", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.elmostrador.cl", desc:"Primer diario digital de Chile."},
   {pais:"Chile", nombre:"El Líbero", tipo:"Digital", linea:"Derecha", web:"https://ellibero.cl", desc:"Digital liberal-conservador."},
-  {pais:"Chile", nombre:"El Desconcierto", tipo:"Digital", linea:"Izquierda", web:"https://www.eldesconcierto.cl", desc:"Periodismo crítico, foco en derechos humanos."},
-  {pais:"Chile", nombre:"Radio Cooperativa", tipo:"Radio", linea:"Centro", web:"https://cooperativa.cl", desc:"Histórica radio chilena, prestigio en noticias."},
-  {pais:"Chile", nombre:"CNN Chile", tipo:"TV", linea:"Centro", web:"https://www.cnnchile.com", desc:"Filial de CNN, parte de Warner Bros. Discovery Chile."},
-  {pais:"Chile", nombre:"La Voz de los que Sobran", tipo:"Digital", linea:"Izquierda", web:"https://lavozdelosquesobran.cl", desc:"Periodismo crítico, financiado por lectores."},
- 
+  {pais:"Chile", nombre:"El Desconcierto", tipo:"Digital", linea:"Izquierda", web:"https://www.eldesconcierto.cl", desc:"Foco en derechos humanos."},
+  {pais:"Chile", nombre:"Radio Cooperativa", tipo:"Radio", linea:"Centro", web:"https://cooperativa.cl", desc:"Prestigio en noticias radiofónicas."},
+  {pais:"Chile", nombre:"CNN Chile", tipo:"TV", linea:"Centro", web:"https://www.cnnchile.com", desc:"Filial de CNN en Chile."},
+  {pais:"Chile", nombre:"La Voz de los que Sobran", tipo:"Digital", linea:"Izquierda", web:"https://lavozdelosquesobran.cl", desc:"Financiado por lectores."},
   // COLOMBIA
   {pais:"Colombia", nombre:"El Tiempo", tipo:"Diario", linea:"Centro-derecha", web:"https://www.eltiempo.com", desc:"Diario de mayor circulación. Grupo Sarmiento Angulo."},
-  {pais:"Colombia", nombre:"El Espectador", tipo:"Diario", linea:"Centro-izquierda", web:"https://www.elespectador.com", desc:"Segundo diario nacional, históricamente liberal. Grupo Santo Domingo."},
-  {pais:"Colombia", nombre:"Semana", tipo:"Revista", linea:"Derecha", web:"https://www.semana.com", desc:"Revista semanal, viró a la derecha tras la compra por Gilinski en 2019."},
-  {pais:"Colombia", nombre:"La Silla Vacía", tipo:"Digital", linea:"Investigación", web:"https://www.lasillavacia.com", desc:"Periodismo de poder e investigación independiente."},
+  {pais:"Colombia", nombre:"El Espectador", tipo:"Diario", linea:"Centro-izquierda", web:"https://www.elespectador.com", desc:"Segundo diario, históricamente liberal. Grupo Santo Domingo."},
+  {pais:"Colombia", nombre:"Semana", tipo:"Revista", linea:"Derecha", web:"https://www.semana.com", desc:"Viró a la derecha tras la compra por Gilinski en 2019."},
+  {pais:"Colombia", nombre:"La Silla Vacía", tipo:"Digital", linea:"Investigación", web:"https://www.lasillavacia.com", desc:"Periodismo de poder e investigación."},
   {pais:"Colombia", nombre:"Cuestión Pública", tipo:"Investigación", linea:"Investigación", web:"https://cuestionpublica.com", desc:"Investigación independiente y datos."},
   {pais:"Colombia", nombre:"Vorágine", tipo:"Investigación", linea:"Investigación", web:"https://voragine.co", desc:"Periodismo de investigación independiente."},
   {pais:"Colombia", nombre:"El Colombiano", tipo:"Diario", linea:"Centro-derecha", web:"https://www.elcolombiano.com", desc:"Principal diario de Medellín y Antioquia."},
-  {pais:"Colombia", nombre:"070", tipo:"Digital", linea:"Centro-izquierda", web:"https://cerosetenta.uniandes.edu.co", desc:"Revista de la Universidad de los Andes, cultura y política."},
-  {pais:"Colombia", nombre:"Razón Pública", tipo:"Digital", linea:"Centro", web:"https://razonpublica.com", desc:"Análisis académico-político independiente."},
-  {pais:"Colombia", nombre:"Blu Radio", tipo:"Radio", linea:"Centro-derecha", web:"https://www.bluradio.com", desc:"Radio de noticias de Caracol Televisión."},
-  {pais:"Colombia", nombre:"Caracol Radio", tipo:"Radio", linea:"Centro", web:"https://caracol.com.co", desc:"Cadena radial del Grupo PRISA (no confundir con Caracol TV)."},
+  {pais:"Colombia", nombre:"070", tipo:"Digital", linea:"Centro-izquierda", web:"https://cerosetenta.uniandes.edu.co", desc:"Universidad de los Andes. Cultura y política."},
+  {pais:"Colombia", nombre:"Razón Pública", tipo:"Digital", linea:"Centro", web:"https://razonpublica.com", desc:"Análisis académico-político."},
+  {pais:"Colombia", nombre:"Blu Radio", tipo:"Radio", linea:"Centro-derecha", web:"https://www.bluradio.com", desc:"Radio de Caracol Televisión."},
+  {pais:"Colombia", nombre:"Caracol Radio", tipo:"Radio", linea:"Centro", web:"https://caracol.com.co", desc:"Cadena radial del Grupo PRISA."},
   {pais:"Colombia", nombre:"Noticias Caracol", tipo:"TV", linea:"Centro", web:"https://www.noticiascaracol.com", desc:"Canal Caracol, audiencia masiva."},
-  {pais:"Colombia", nombre:"Mutante", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.mutante.org", desc:"Periodismo de conversación pública y derechos."},
+  {pais:"Colombia", nombre:"Mutante", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.mutante.org", desc:"Periodismo de conversación pública."},
   {pais:"Colombia", nombre:"Colombia Check", tipo:"Verificación", linea:"Independiente", web:"https://colombiacheck.com", desc:"Fact-checking colombiano."},
- 
   // COSTA RICA
   {pais:"Costa Rica", nombre:"La Nación", tipo:"Diario", linea:"Centro-derecha", web:"https://www.nacion.com", desc:"Principal diario costarricense."},
-  {pais:"Costa Rica", nombre:"Semanario Universidad", tipo:"Semanario", linea:"Centro-izquierda", web:"https://semanariouniversidad.com", desc:"De la Universidad de Costa Rica, periodismo de investigación."},
-  {pais:"Costa Rica", nombre:"CRHoy", tipo:"Digital", linea:"Centro", web:"https://www.crhoy.com", desc:"Portal de noticias actualizadas al minuto."},
-  {pais:"Costa Rica", nombre:"Delfino.cr", tipo:"Digital", linea:"Centro", web:"https://delfino.cr", desc:"Análisis político y opinión, independiente."},
+  {pais:"Costa Rica", nombre:"Semanario Universidad", tipo:"Semanario", linea:"Centro-izquierda", web:"https://semanariouniversidad.com", desc:"Universidad de Costa Rica. Investigación."},
+  {pais:"Costa Rica", nombre:"CRHoy", tipo:"Digital", linea:"Centro", web:"https://www.crhoy.com", desc:"Portal de noticias al minuto."},
+  {pais:"Costa Rica", nombre:"Delfino.cr", tipo:"Digital", linea:"Centro", web:"https://delfino.cr", desc:"Análisis político independiente."},
   {pais:"Costa Rica", nombre:"La Voz de Guanacaste", tipo:"Digital", linea:"Investigación", web:"https://vozdeguanacaste.com", desc:"Periodismo regional de investigación."},
- 
   // CUBA
   {pais:"Cuba", nombre:"Granma", tipo:"Diario", linea:"Estatal", web:"https://www.granma.cu", desc:"Órgano oficial del Partido Comunista de Cuba."},
   {pais:"Cuba", nombre:"Juventud Rebelde", tipo:"Diario", linea:"Estatal", web:"http://www.juventudrebelde.cu", desc:"Diario oficial dirigido a jóvenes."},
-  {pais:"Cuba", nombre:"14ymedio", tipo:"Digital", linea:"Independiente", web:"https://www.14ymedio.com", desc:"Independiente fundado por Yoani Sánchez, crítico del gobierno."},
-  {pais:"Cuba", nombre:"El Toque", tipo:"Digital", linea:"Independiente", web:"https://eltoque.com", desc:"Periodismo independiente, foco en derechos y economía."},
+  {pais:"Cuba", nombre:"14ymedio", tipo:"Digital", linea:"Independiente", web:"https://www.14ymedio.com", desc:"Independiente de Yoani Sánchez, crítico del gobierno."},
+  {pais:"Cuba", nombre:"El Toque", tipo:"Digital", linea:"Independiente", web:"https://eltoque.com", desc:"Periodismo independiente, derechos y economía."},
   {pais:"Cuba", nombre:"Periodismo de Barrio", tipo:"Digital", linea:"Independiente", web:"https://www.periodismodebarrio.org", desc:"Periodismo comunitario y ambiental."},
-  {pais:"Cuba", nombre:"OnCuba News", tipo:"Digital", linea:"Centro", web:"https://oncubanews.com", desc:"Editado fuera de la isla, cobertura sobre Cuba."},
-  {pais:"Cuba", nombre:"CubaNet", tipo:"Digital", linea:"Independiente", web:"https://www.cubanet.org", desc:"Histórico medio independiente, crítico del gobierno."},
- 
+  {pais:"Cuba", nombre:"OnCuba News", tipo:"Digital", linea:"Centro", web:"https://oncubanews.com", desc:"Editado fuera de la isla."},
+  {pais:"Cuba", nombre:"CubaNet", tipo:"Digital", linea:"Independiente", web:"https://www.cubanet.org", desc:"Histórico medio independiente, crítico."},
   // ECUADOR
   {pais:"Ecuador", nombre:"El Comercio", tipo:"Diario", linea:"Centro-derecha", web:"https://www.elcomercio.com", desc:"Principal diario de Quito."},
-  {pais:"Ecuador", nombre:"El Universo", tipo:"Diario", linea:"Centro-derecha", web:"https://www.eluniverso.com", desc:"Principal diario de Guayaquil, mayor circulación nacional."},
-  {pais:"Ecuador", nombre:"Plan V", tipo:"Investigación", linea:"Investigación", web:"https://www.planv.com.ec", desc:"Revista digital de investigación independiente."},
-  {pais:"Ecuador", nombre:"GK", tipo:"Digital", linea:"Centro-izquierda", web:"https://gk.city", desc:"Periodismo joven, derechos, género, política."},
-  {pais:"Ecuador", nombre:"Primicias", tipo:"Digital", linea:"Centro", web:"https://www.primicias.ec", desc:"Portal de noticias independiente, foco político-económico."},
-  {pais:"Ecuador", nombre:"La Posta", tipo:"Digital", linea:"Centro-derecha", web:"https://www.lapostaec.com", desc:"Portal con énfasis en denuncias políticas."},
+  {pais:"Ecuador", nombre:"El Universo", tipo:"Diario", linea:"Centro-derecha", web:"https://www.eluniverso.com", desc:"Mayor circulación nacional, Guayaquil."},
+  {pais:"Ecuador", nombre:"Plan V", tipo:"Investigación", linea:"Investigación", web:"https://www.planv.com.ec", desc:"Investigación digital independiente."},
+  {pais:"Ecuador", nombre:"GK", tipo:"Digital", linea:"Centro-izquierda", web:"https://gk.city", desc:"Derechos, género, política."},
+  {pais:"Ecuador", nombre:"Primicias", tipo:"Digital", linea:"Centro", web:"https://www.primicias.ec", desc:"Portal político-económico."},
+  {pais:"Ecuador", nombre:"La Posta", tipo:"Digital", linea:"Centro-derecha", web:"https://www.lapostaec.com", desc:"Énfasis en denuncias políticas."},
   {pais:"Ecuador", nombre:"Diario Extra", tipo:"Diario", linea:"Centro", web:"https://www.extra.ec", desc:"Diario popular de Guayaquil."},
   {pais:"Ecuador", nombre:"Ecuavisa", tipo:"TV", linea:"Centro", web:"https://www.ecuavisa.com", desc:"Cadena de TV nacional."},
- 
   // EL SALVADOR
-  {pais:"El Salvador", nombre:"El Faro", tipo:"Investigación", linea:"Investigación", web:"https://elfaro.net", desc:"Primer periódico digital de AL. Referencia regional en investigación. Operación fuera del país por presiones."},
+  {pais:"El Salvador", nombre:"El Faro", tipo:"Investigación", linea:"Investigación", web:"https://elfaro.net", desc:"Primer periódico digital de AL. Referencia regional."},
   {pais:"El Salvador", nombre:"La Prensa Gráfica", tipo:"Diario", linea:"Centro-derecha", web:"https://www.laprensagrafica.com", desc:"Diario tradicional, mayor circulación."},
-  {pais:"El Salvador", nombre:"El Diario de Hoy", tipo:"Diario", linea:"Derecha", web:"https://www.elsalvador.com", desc:"Diario conservador, propiedad de la familia Altamirano."},
+  {pais:"El Salvador", nombre:"El Diario de Hoy", tipo:"Diario", linea:"Derecha", web:"https://www.elsalvador.com", desc:"Familia Altamirano."},
   {pais:"El Salvador", nombre:"Revista Factum", tipo:"Digital", linea:"Investigación", web:"https://www.revistafactum.com", desc:"Investigación independiente."},
-  {pais:"El Salvador", nombre:"GatoEncerrado", tipo:"Digital", linea:"Independiente", web:"https://gatoencerrado.news", desc:"Periodismo joven e independiente."},
-  {pais:"El Salvador", nombre:"Disruptiva", tipo:"Digital", linea:"Centro", web:"https://www.disruptiva.media", desc:"Foco en innovación, datos y análisis."},
- 
+  {pais:"El Salvador", nombre:"GatoEncerrado", tipo:"Digital", linea:"Independiente", web:"https://gatoencerrado.news", desc:"Periodismo joven independiente."},
+  {pais:"El Salvador", nombre:"Disruptiva", tipo:"Digital", linea:"Centro", web:"https://www.disruptiva.media", desc:"Innovación, datos y análisis."},
   // GUATEMALA
   {pais:"Guatemala", nombre:"Prensa Libre", tipo:"Diario", linea:"Centro", web:"https://www.prensalibre.com", desc:"Diario de mayor circulación."},
-  {pais:"Guatemala", nombre:"Plaza Pública", tipo:"Investigación", linea:"Investigación", web:"https://www.plazapublica.com.gt", desc:"Universidad Rafael Landívar. Investigación de gran prestigio."},
-  {pais:"Guatemala", nombre:"Agencia Ocote", tipo:"Digital", linea:"Investigación", web:"https://www.agenciaocote.com", desc:"Investigación y periodismo narrativo."},
+  {pais:"Guatemala", nombre:"Plaza Pública", tipo:"Investigación", linea:"Investigación", web:"https://www.plazapublica.com.gt", desc:"URL. Investigación de gran prestigio."},
+  {pais:"Guatemala", nombre:"Agencia Ocote", tipo:"Digital", linea:"Investigación", web:"https://www.agenciaocote.com", desc:"Investigación y narrativa."},
   {pais:"Guatemala", nombre:"No-Ficción", tipo:"Digital", linea:"Investigación", web:"https://no-ficcion.com", desc:"Periodismo narrativo de no ficción."},
   {pais:"Guatemala", nombre:"Soy502", tipo:"Digital", linea:"Centro", web:"https://www.soy502.com", desc:"Portal de noticias diario."},
   {pais:"Guatemala", nombre:"República.gt", tipo:"Digital", linea:"Derecha", web:"https://republica.gt", desc:"Portal conservador-liberal."},
- 
+  // GUYANA
+  {pais:"Guyana", nombre:"Stabroek News", tipo:"Diario", linea:"Centro", web:"https://www.stabroeknews.com", desc:"Principal diario independiente en Georgetown."},
+  {pais:"Guyana", nombre:"Kaieteur News", tipo:"Diario", linea:"Centro", web:"https://www.kaieteurnewsonline.com", desc:"Diario popular con foco en denuncias."},
+  {pais:"Guyana", nombre:"Guyana Chronicle", tipo:"Diario", linea:"Estatal", web:"https://guyanachronicle.com", desc:"Diario oficial del Estado."},
+  {pais:"Guyana", nombre:"Demerara Waves", tipo:"Digital", linea:"Centro", web:"https://demerarawaves.com", desc:"Portal digital de noticias."},
+  // HAITÍ
+  {pais:"Haití", nombre:"Le Nouvelliste", tipo:"Diario", linea:"Centro", web:"https://lenouvelliste.com", desc:"Decano de la prensa haitiana, fundado en 1898. En francés."},
+  {pais:"Haití", nombre:"Le National", tipo:"Diario", linea:"Centro", web:"https://lenational.org", desc:"Diario en francés."},
+  {pais:"Haití", nombre:"AyiboPost", tipo:"Digital", linea:"Independiente", web:"https://ayibopost.com", desc:"Portal joven independiente, bilingüe francés/criollo."},
+  {pais:"Haití", nombre:"Rezo Nòdwès", tipo:"Digital", linea:"Independiente", web:"https://rezonodwes.com", desc:"Portal en criollo haitiano y francés."},
+  {pais:"Haití", nombre:"Alterpresse", tipo:"Agencia", linea:"Centro-izquierda", web:"https://www.alterpresse.org", desc:"Agencia de la sociedad civil."},
+  {pais:"Haití", nombre:"Haïti Libre", tipo:"Digital", linea:"Centro", web:"https://www.haitilibre.com", desc:"Portal multiidioma con cobertura amplia."},
   // HONDURAS
   {pais:"Honduras", nombre:"La Prensa", tipo:"Diario", linea:"Centro-derecha", web:"https://www.laprensa.hn", desc:"Diario de San Pedro Sula. Grupo OPSA."},
-  {pais:"Honduras", nombre:"El Heraldo", tipo:"Diario", linea:"Centro-derecha", web:"https://www.elheraldo.hn", desc:"Diario de Tegucigalpa. Mismo grupo que La Prensa."},
-  {pais:"Honduras", nombre:"Contracorriente", tipo:"Investigación", linea:"Investigación", web:"https://contracorriente.red", desc:"Periodismo de investigación independiente."},
+  {pais:"Honduras", nombre:"El Heraldo", tipo:"Diario", linea:"Centro-derecha", web:"https://www.elheraldo.hn", desc:"Diario de Tegucigalpa. Grupo OPSA."},
+  {pais:"Honduras", nombre:"Contracorriente", tipo:"Investigación", linea:"Investigación", web:"https://contracorriente.red", desc:"Investigación independiente."},
   {pais:"Honduras", nombre:"Criterio.hn", tipo:"Digital", linea:"Centro-izquierda", web:"https://criterio.hn", desc:"Periodismo crítico, derechos humanos."},
-  {pais:"Honduras", nombre:"Radio Progreso", tipo:"Radio", linea:"Centro-izquierda", web:"https://radioprogresohn.net", desc:"Jesuita, voz histórica en derechos humanos."},
- 
+  {pais:"Honduras", nombre:"Radio Progreso", tipo:"Radio", linea:"Centro-izquierda", web:"https://radioprogresohn.net", desc:"Jesuita, voz en derechos humanos."},
+  // JAMAICA
+  {pais:"Jamaica", nombre:"The Jamaica Gleaner", tipo:"Diario", linea:"Centro", web:"https://jamaica-gleaner.com", desc:"Diario más antiguo del Caribe anglófono, fundado en 1834."},
+  {pais:"Jamaica", nombre:"The Jamaica Observer", tipo:"Diario", linea:"Centro-derecha", web:"https://www.jamaicaobserver.com", desc:"Diario propiedad del empresario Butch Stewart."},
+  {pais:"Jamaica", nombre:"Loop Jamaica", tipo:"Digital", linea:"Centro", web:"https://jamaica.loopnews.com", desc:"Portal digital del grupo caribeño Loop."},
+  {pais:"Jamaica", nombre:"RJR News", tipo:"Radio", linea:"Centro", web:"http://radiojamaicanewsonline.com", desc:"Radio Jamaica, cadena histórica."},
   // MÉXICO
-  {pais:"México", nombre:"Reforma", tipo:"Diario", linea:"Centro-derecha", web:"https://www.reforma.com", desc:"Diario crítico del oficialismo. Grupo Reforma. Mucho de su contenido tras paywall."},
+  {pais:"México", nombre:"Reforma", tipo:"Diario", linea:"Centro-derecha", web:"https://www.reforma.com", desc:"Diario crítico del oficialismo. Grupo Reforma."},
   {pais:"México", nombre:"El Universal", tipo:"Diario", linea:"Centro", web:"https://www.eluniversal.com.mx", desc:"Diario tradicional, audiencia masiva."},
-  {pais:"México", nombre:"La Jornada", tipo:"Diario", linea:"Izquierda", web:"https://www.jornada.com.mx", desc:"Diario de izquierda alineado con el oficialismo morenista."},
-  {pais:"México", nombre:"Milenio", tipo:"Diario", linea:"Centro", web:"https://www.milenio.com", desc:"Diario y canal de noticias del Grupo Milenio."},
-  {pais:"México", nombre:"El Financiero", tipo:"Económico", linea:"Centro", web:"https://www.elfinanciero.com.mx", desc:"Diario económico-político, ahora también con noticiero."},
+  {pais:"México", nombre:"La Jornada", tipo:"Diario", linea:"Izquierda", web:"https://www.jornada.com.mx", desc:"Diario de izquierda alineado con Morena."},
+  {pais:"México", nombre:"Milenio", tipo:"Diario", linea:"Centro", web:"https://www.milenio.com", desc:"Diario y canal del Grupo Milenio."},
+  {pais:"México", nombre:"El Financiero", tipo:"Económico", linea:"Centro", web:"https://www.elfinanciero.com.mx", desc:"Diario económico-político."},
   {pais:"México", nombre:"Excélsior", tipo:"Diario", linea:"Centro", web:"https://www.excelsior.com.mx", desc:"Diario tradicional, Grupo Imagen."},
   {pais:"México", nombre:"Proceso", tipo:"Revista", linea:"Investigación", web:"https://www.proceso.com.mx", desc:"Revista semanal histórica, investigación crítica."},
-  {pais:"México", nombre:"Animal Político", tipo:"Digital", linea:"Investigación", web:"https://www.animalpolitico.com", desc:"Periodismo de datos e investigación independiente."},
-  {pais:"México", nombre:"Aristegui Noticias", tipo:"Digital", linea:"Centro-izquierda", web:"https://aristeguinoticias.com", desc:"Portal de Carmen Aristegui. Crítico, investigación."},
-  {pais:"México", nombre:"SinEmbargo", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.sinembargo.mx", desc:"Portal con énfasis en denuncia y derechos."},
-  {pais:"México", nombre:"Quinto Elemento Lab", tipo:"Investigación", linea:"Investigación", web:"https://quintoelab.org", desc:"Investigación de alto impacto, sin fines de lucro."},
-  {pais:"México", nombre:"Pie de Página", tipo:"Digital", linea:"Investigación", web:"https://piedepagina.mx", desc:"Red de periodistas, cobertura humanitaria y derechos."},
-  {pais:"México", nombre:"Latinus", tipo:"Digital/TV", linea:"Derecha", web:"https://latinus.us", desc:"Plataforma de Carlos Loret de Mola, fuerte oposición al oficialismo."},
-  {pais:"México", nombre:"Eje Central", tipo:"Digital", linea:"Centro", web:"https://www.ejecentral.com.mx", desc:"Análisis político con perspectiva moderada."},
-  {pais:"México", nombre:"MCCI", tipo:"Investigación", linea:"Investigación", web:"https://contralacorrupcion.mx", desc:"Mexicanos contra la Corrupción y la Impunidad."},
-  {pais:"México", nombre:"Verificado", tipo:"Verificación", linea:"Independiente", web:"https://verificado.com.mx", desc:"Fact-checking electoral y político."},
- 
+  {pais:"México", nombre:"Animal Político", tipo:"Digital", linea:"Investigación", web:"https://www.animalpolitico.com", desc:"Datos e investigación independiente."},
+  {pais:"México", nombre:"Aristegui Noticias", tipo:"Digital", linea:"Centro-izquierda", web:"https://aristeguinoticias.com", desc:"Portal de Carmen Aristegui."},
+  {pais:"México", nombre:"SinEmbargo", tipo:"Digital", linea:"Centro-izquierda", web:"https://www.sinembargo.mx", desc:"Denuncia y derechos."},
+  {pais:"México", nombre:"Quinto Elemento Lab", tipo:"Investigación", linea:"Investigación", web:"https://quintoelab.org", desc:"Investigación de alto impacto sin fines de lucro."},
+  {pais:"México", nombre:"Pie de Página", tipo:"Digital", linea:"Investigación", web:"https://piedepagina.mx", desc:"Red de periodistas, cobertura humanitaria."},
+  {pais:"México", nombre:"Latinus", tipo:"Digital/TV", linea:"Derecha", web:"https://latinus.us", desc:"Plataforma de Carlos Loret de Mola."},
+  {pais:"México", nombre:"Eje Central", tipo:"Digital", linea:"Centro", web:"https://www.ejecentral.com.mx", desc:"Análisis político moderado."},
+  {pais:"México", nombre:"MCCI", tipo:"Investigación", linea:"Investigación", web:"https://contralacorrupcion.mx", desc:"Mexicanos contra la Corrupción."},
+  {pais:"México", nombre:"Verificado", tipo:"Verificación", linea:"Independiente", web:"https://verificado.com.mx", desc:"Fact-checking electoral."},
   // NICARAGUA
-  {pais:"Nicaragua", nombre:"Confidencial", tipo:"Digital", linea:"Independiente", web:"https://confidencial.digital", desc:"De Carlos F. Chamorro. Crítico del régimen, opera en exilio."},
-  {pais:"Nicaragua", nombre:"La Prensa", tipo:"Diario", linea:"Centro-derecha", web:"https://www.laprensa.com.ni", desc:"Histórico diario opositor, opera en condiciones difíciles."},
-  {pais:"Nicaragua", nombre:"Divergentes", tipo:"Digital", linea:"Independiente", web:"https://www.divergentes.com", desc:"Investigación regional Centroamérica, opera fuera del país."},
-  {pais:"Nicaragua", nombre:"100% Noticias", tipo:"TV/Digital", linea:"Independiente", web:"https://100noticias.com.ni", desc:"Cadena crítica del oficialismo, opera en exilio."},
- 
+  {pais:"Nicaragua", nombre:"Confidencial", tipo:"Digital", linea:"Independiente", web:"https://confidencial.digital", desc:"De Carlos F. Chamorro. Crítico del régimen, opera en el exilio."},
+  {pais:"Nicaragua", nombre:"La Prensa", tipo:"Diario", linea:"Centro-derecha", web:"https://www.laprensa.com.ni", desc:"Histórico diario opositor."},
+  {pais:"Nicaragua", nombre:"Divergentes", tipo:"Digital", linea:"Independiente", web:"https://www.divergentes.com", desc:"Investigación centroamericana en el exilio."},
+  {pais:"Nicaragua", nombre:"100% Noticias", tipo:"TV/Digital", linea:"Independiente", web:"https://100noticias.com.ni", desc:"Cadena crítica, opera en el exilio."},
   // PANAMÁ
-  {pais:"Panamá", nombre:"La Prensa", tipo:"Diario", linea:"Centro", web:"https://www.prensa.com", desc:"Principal diario, periodismo de investigación de tradición."},
+  {pais:"Panamá", nombre:"La Prensa", tipo:"Diario", linea:"Centro", web:"https://www.prensa.com", desc:"Principal diario. Tradición de investigación."},
   {pais:"Panamá", nombre:"La Estrella de Panamá", tipo:"Diario", linea:"Centro", web:"https://www.laestrella.com.pa", desc:"Diario más antiguo del país."},
-  {pais:"Panamá", nombre:"Foco Panamá", tipo:"Investigación", linea:"Investigación", web:"https://focopanama.com", desc:"Periodismo digital de investigación."},
+  {pais:"Panamá", nombre:"Foco Panamá", tipo:"Investigación", linea:"Investigación", web:"https://focopanama.com", desc:"Investigación digital."},
   {pais:"Panamá", nombre:"Telemetro", tipo:"TV", linea:"Centro", web:"https://www.telemetro.com", desc:"Canal de noticias principal."},
- 
   // PARAGUAY
   {pais:"Paraguay", nombre:"ABC Color", tipo:"Diario", linea:"Centro-derecha", web:"https://www.abc.com.py", desc:"Diario crítico con larga tradición."},
   {pais:"Paraguay", nombre:"Última Hora", tipo:"Diario", linea:"Centro", web:"https://www.ultimahora.com", desc:"Diario de circulación general."},
   {pais:"Paraguay", nombre:"La Nación", tipo:"Diario", linea:"Centro-derecha", web:"https://www.lanacion.com.py", desc:"Diario del grupo del expresidente Cartes."},
-  {pais:"Paraguay", nombre:"El Surti", tipo:"Digital", linea:"Investigación", web:"https://elsurti.com", desc:"Periodismo joven e independiente, narrativa visual."},
+  {pais:"Paraguay", nombre:"El Surti", tipo:"Digital", linea:"Investigación", web:"https://elsurti.com", desc:"Periodismo joven independiente, narrativa visual."},
   {pais:"Paraguay", nombre:"5 Días", tipo:"Económico", linea:"Centro", web:"https://www.5dias.com.py", desc:"Diario económico-empresarial."},
- 
   // PERÚ
-  {pais:"Perú", nombre:"El Comercio", tipo:"Diario", linea:"Centro-derecha", web:"https://elcomercio.pe", desc:"Decano de la prensa peruana. Grupo El Comercio."},
+  {pais:"Perú", nombre:"El Comercio", tipo:"Diario", linea:"Centro-derecha", web:"https://elcomercio.pe", desc:"Decano de la prensa peruana."},
   {pais:"Perú", nombre:"La República", tipo:"Diario", linea:"Centro-izquierda", web:"https://larepublica.pe", desc:"Diario de línea progresista."},
-  {pais:"Perú", nombre:"Perú21", tipo:"Diario", linea:"Centro-derecha", web:"https://peru21.pe", desc:"Diario del Grupo El Comercio, tono más ágil."},
+  {pais:"Perú", nombre:"Perú21", tipo:"Diario", linea:"Centro-derecha", web:"https://peru21.pe", desc:"Diario del Grupo El Comercio, tono ágil."},
   {pais:"Perú", nombre:"Gestión", tipo:"Económico", linea:"Centro-derecha", web:"https://gestion.pe", desc:"Diario económico-financiero."},
-  {pais:"Perú", nombre:"IDL-Reporteros", tipo:"Investigación", linea:"Investigación", web:"https://www.idl-reporteros.pe", desc:"Investigación independiente, referencia regional."},
+  {pais:"Perú", nombre:"IDL-Reporteros", tipo:"Investigación", linea:"Investigación", web:"https://www.idl-reporteros.pe", desc:"Referencia regional en investigación."},
   {pais:"Perú", nombre:"Ojo Público", tipo:"Investigación", linea:"Investigación", web:"https://ojo-publico.com", desc:"Periodismo de datos e investigación."},
   {pais:"Perú", nombre:"Convoca", tipo:"Investigación", linea:"Investigación", web:"https://www.convoca.pe", desc:"Datos e investigación."},
-  {pais:"Perú", nombre:"Sudaca", tipo:"Digital", linea:"Centro", web:"https://sudaca.pe", desc:"Portal de análisis político independiente."},
+  {pais:"Perú", nombre:"Sudaca", tipo:"Digital", linea:"Centro", web:"https://sudaca.pe", desc:"Análisis político independiente."},
   {pais:"Perú", nombre:"Wayka", tipo:"Digital", linea:"Izquierda", web:"https://wayka.pe", desc:"Periodismo crítico de izquierda."},
   {pais:"Perú", nombre:"Caretas", tipo:"Revista", linea:"Centro", web:"https://caretas.pe", desc:"Revista semanal de larga trayectoria."},
-  {pais:"Perú", nombre:"Hildebrandt en sus trece", tipo:"Semanario", linea:"Izquierda", web:"https://hildebrandtensustrece.com", desc:"Semanario de César Hildebrandt, crítico."},
-  {pais:"Perú", nombre:"La Mula", tipo:"Digital", linea:"Centro-izquierda", web:"https://lamula.pe", desc:"Periodismo colaborativo y opinión."},
-  {pais:"Perú", nombre:"RPP", tipo:"Radio", linea:"Centro", web:"https://rpp.pe", desc:"Radio Programas del Perú, principal cadena radial."},
- 
+  {pais:"Perú", nombre:"Hildebrandt en sus trece", tipo:"Semanario", linea:"Izquierda", web:"https://hildebrandtensustrece.com", desc:"Semanario crítico de César Hildebrandt."},
+  {pais:"Perú", nombre:"La Mula", tipo:"Digital", linea:"Centro-izquierda", web:"https://lamula.pe", desc:"Periodismo colaborativo."},
+  {pais:"Perú", nombre:"RPP", tipo:"Radio", linea:"Centro", web:"https://rpp.pe", desc:"Radio Programas del Perú."},
   // PUERTO RICO
   {pais:"Puerto Rico", nombre:"El Nuevo Día", tipo:"Diario", linea:"Centro", web:"https://www.elnuevodia.com", desc:"Diario de mayor circulación."},
-  {pais:"Puerto Rico", nombre:"Centro de Periodismo Investigativo", tipo:"Investigación", linea:"Investigación", web:"https://periodismoinvestigativo.com", desc:"CPI. Investigación de alto impacto, sin fines de lucro."},
+  {pais:"Puerto Rico", nombre:"Centro de Periodismo Investigativo", tipo:"Investigación", linea:"Investigación", web:"https://periodismoinvestigativo.com", desc:"CPI. Investigación de alto impacto."},
   {pais:"Puerto Rico", nombre:"El Vocero", tipo:"Diario", linea:"Centro", web:"https://www.elvocero.com", desc:"Diario de tono popular."},
- 
   // REPÚBLICA DOMINICANA
   {pais:"R. Dominicana", nombre:"Listín Diario", tipo:"Diario", linea:"Centro", web:"https://listindiario.com", desc:"Diario tradicional de mayor circulación."},
   {pais:"R. Dominicana", nombre:"Diario Libre", tipo:"Diario", linea:"Centro", web:"https://www.diariolibre.com", desc:"Diario gratuito, alta lectoría."},
   {pais:"R. Dominicana", nombre:"Hoy", tipo:"Diario", linea:"Centro", web:"https://hoy.com.do", desc:"Diario nacional."},
   {pais:"R. Dominicana", nombre:"Acento", tipo:"Digital", linea:"Centro-izquierda", web:"https://acento.com.do", desc:"Portal de noticias y opinión."},
   {pais:"R. Dominicana", nombre:"El Caribe", tipo:"Diario", linea:"Centro", web:"https://www.elcaribe.com.do", desc:"Diario nacional."},
- 
+  // SURINAM
+  {pais:"Surinam", nombre:"De Ware Tijd", tipo:"Diario", linea:"Centro", web:"https://dwtonline.com", desc:"Principal diario en neerlandés."},
+  {pais:"Surinam", nombre:"Starnieuws", tipo:"Digital", linea:"Centro", web:"https://www.starnieuws.com", desc:"Portal digital líder en Surinam."},
+  {pais:"Surinam", nombre:"Dagblad Suriname", tipo:"Diario", linea:"Centro", web:"https://www.dbsuriname.com", desc:"Diario nacional."},
+  // TRINIDAD Y TOBAGO
+  {pais:"Trinidad y Tobago", nombre:"Trinidad Express", tipo:"Diario", linea:"Centro", web:"https://trinidadexpress.com", desc:"Diario de mayor circulación."},
+  {pais:"Trinidad y Tobago", nombre:"Trinidad Guardian", tipo:"Diario", linea:"Centro", web:"https://guardian.co.tt", desc:"Diario histórico."},
+  {pais:"Trinidad y Tobago", nombre:"Newsday", tipo:"Diario", linea:"Centro", web:"https://newsday.co.tt", desc:"Diario nacional."},
+  {pais:"Trinidad y Tobago", nombre:"Loop TT", tipo:"Digital", linea:"Centro", web:"https://tt.loopnews.com", desc:"Portal del grupo caribeño Loop."},
   // URUGUAY
   {pais:"Uruguay", nombre:"El País", tipo:"Diario", linea:"Centro-derecha", web:"https://www.elpais.com.uy", desc:"Diario tradicional de mayor circulación."},
-  {pais:"Uruguay", nombre:"La Diaria", tipo:"Diario", linea:"Centro-izquierda", web:"https://ladiaria.com.uy", desc:"Cooperativa de lectores. Periodismo serio, suscripción."},
-  {pais:"Uruguay", nombre:"El Observador", tipo:"Diario", linea:"Centro-derecha", web:"https://www.elobservador.com.uy", desc:"Diario de tono ágil, foco económico y político."},
-  {pais:"Uruguay", nombre:"Búsqueda", tipo:"Semanario", linea:"Centro-derecha", web:"https://www.busqueda.com.uy", desc:"Semanario referencial, análisis político-económico."},
-  {pais:"Uruguay", nombre:"Brecha", tipo:"Semanario", linea:"Izquierda", web:"https://brecha.com.uy", desc:"Semanario de izquierda, fundado en 1985."},
+  {pais:"Uruguay", nombre:"La Diaria", tipo:"Diario", linea:"Centro-izquierda", web:"https://ladiaria.com.uy", desc:"Cooperativa de lectores. Periodismo serio."},
+  {pais:"Uruguay", nombre:"El Observador", tipo:"Diario", linea:"Centro-derecha", web:"https://www.elobservador.com.uy", desc:"Foco económico y político."},
+  {pais:"Uruguay", nombre:"Búsqueda", tipo:"Semanario", linea:"Centro-derecha", web:"https://www.busqueda.com.uy", desc:"Semanario referencial de análisis."},
+  {pais:"Uruguay", nombre:"Brecha", tipo:"Semanario", linea:"Izquierda", web:"https://brecha.com.uy", desc:"Semanario de izquierda desde 1985."},
   {pais:"Uruguay", nombre:"Sudestada", tipo:"Investigación", linea:"Investigación", web:"https://www.sudestada.com.uy", desc:"Revista de investigación."},
   {pais:"Uruguay", nombre:"Montevideo Portal", tipo:"Digital", linea:"Centro", web:"https://www.montevideo.com.uy", desc:"Portal de noticias amplio."},
   {pais:"Uruguay", nombre:"Caras y Caretas", tipo:"Semanario", linea:"Izquierda", web:"https://www.carasycaretas.com.uy", desc:"Semanario de izquierda."},
- 
   // VENEZUELA
   {pais:"Venezuela", nombre:"El Nacional", tipo:"Digital", linea:"Centro-derecha", web:"https://www.elnacional.com", desc:"Histórico diario, hoy solo digital y crítico del oficialismo."},
   {pais:"Venezuela", nombre:"Tal Cual", tipo:"Digital", linea:"Centro-derecha", web:"https://talcualdigital.com", desc:"De Teodoro Petkoff. Crítico del oficialismo."},
-  {pais:"Venezuela", nombre:"Efecto Cocuyo", tipo:"Digital", linea:"Independiente", web:"https://efectococuyo.com", desc:"Periodismo independiente, foco en derechos y crisis."},
-  {pais:"Venezuela", nombre:"Armando.info", tipo:"Investigación", linea:"Investigación", web:"https://armando.info", desc:"Investigación de alto impacto, opera parcialmente fuera del país."},
-  {pais:"Venezuela", nombre:"Runrun.es", tipo:"Digital", linea:"Investigación", web:"https://runrun.es", desc:"De Nelson Bocaranda, investigación y denuncia."},
-  {pais:"Venezuela", nombre:"Crónica.Uno", tipo:"Digital", linea:"Independiente", web:"https://cronica.uno", desc:"Periodismo de comunidades y crisis."},
+  {pais:"Venezuela", nombre:"Efecto Cocuyo", tipo:"Digital", linea:"Independiente", web:"https://efectococuyo.com", desc:"Periodismo independiente, derechos y crisis."},
+  {pais:"Venezuela", nombre:"Armando.info", tipo:"Investigación", linea:"Investigación", web:"https://armando.info", desc:"Investigación de alto impacto, parcialmente en exilio."},
+  {pais:"Venezuela", nombre:"Runrun.es", tipo:"Digital", linea:"Investigación", web:"https://runrun.es", desc:"De Nelson Bocaranda, investigación."},
+  {pais:"Venezuela", nombre:"Crónica.Uno", tipo:"Digital", linea:"Independiente", web:"https://cronica.uno", desc:"Comunidades y crisis."},
   {pais:"Venezuela", nombre:"Prodavinci", tipo:"Digital", linea:"Independiente", web:"https://prodavinci.com", desc:"Cultura, ensayo, datos, larga forma."},
-  {pais:"Venezuela", nombre:"El Pitazo", tipo:"Digital", linea:"Independiente", web:"https://elpitazo.net", desc:"Foco regional y comunitario, alianzas con audiencias bloqueadas."},
-  {pais:"Venezuela", nombre:"VTV", tipo:"TV", linea:"Estatal", web:"https://www.vtv.gob.ve", desc:"Venezolana de Televisión. Estatal, alineada con el oficialismo."},
-  {pais:"Venezuela", nombre:"Últimas Noticias", tipo:"Diario", linea:"Estatal", web:"https://ultimasnoticias.com.ve", desc:"Diario popular, hoy alineado con el oficialismo."},
- 
-  // INTERNACIONAL (Cobertura regional)
-  {pais:"Internacional", nombre:"BBC Mundo", tipo:"Digital", linea:"Centro", web:"https://www.bbc.com/mundo", desc:"Servicio en español de la BBC. Cobertura regional desde Londres."},
+  {pais:"Venezuela", nombre:"El Pitazo", tipo:"Digital", linea:"Independiente", web:"https://elpitazo.net", desc:"Foco regional y comunitario."},
+  {pais:"Venezuela", nombre:"VTV", tipo:"TV", linea:"Estatal", web:"https://www.vtv.gob.ve", desc:"Venezolana de Televisión. Estatal."},
+  {pais:"Venezuela", nombre:"Últimas Noticias", tipo:"Diario", linea:"Estatal", web:"https://ultimasnoticias.com.ve", desc:"Diario popular alineado con el oficialismo."},
+  // INTERNACIONAL
+  {pais:"Internacional", nombre:"BBC Mundo", tipo:"Digital", linea:"Centro", web:"https://www.bbc.com/mundo", desc:"Servicio en español de la BBC."},
   {pais:"Internacional", nombre:"DW Español", tipo:"TV/Digital", linea:"Centro", web:"https://www.dw.com/es", desc:"Deutsche Welle. Cobertura europea y latinoamericana."},
   {pais:"Internacional", nombre:"France 24 Español", tipo:"TV/Digital", linea:"Centro", web:"https://www.france24.com/es", desc:"Versión en español del canal francés."},
   {pais:"Internacional", nombre:"CNN en Español", tipo:"TV/Digital", linea:"Centro", web:"https://cnnespanol.cnn.com", desc:"Canal hermano de CNN para América Latina."},
   {pais:"Internacional", nombre:"El País América", tipo:"Diario", linea:"Centro-izquierda", web:"https://elpais.com/america/", desc:"Edición latinoamericana del diario español."},
-  {pais:"Internacional", nombre:"Connectas", tipo:"Investigación", linea:"Investigación", web:"https://www.connectas.org", desc:"Red de periodistas latinoamericanos de investigación transfronteriza."},
+  {pais:"Internacional", nombre:"Connectas", tipo:"Investigación", linea:"Investigación", web:"https://www.connectas.org", desc:"Red de investigación transfronteriza."},
   {pais:"Internacional", nombre:"Distintas Latitudes", tipo:"Digital", linea:"Centro-izquierda", web:"https://distintaslatitudes.net", desc:"Red de periodistas jóvenes de la región."},
-  {pais:"Internacional", nombre:"Nueva Sociedad", tipo:"Revista", linea:"Centro-izquierda", web:"https://nuso.org", desc:"Revista de análisis político y social. Fundación Friedrich Ebert."},
+  {pais:"Internacional", nombre:"Nueva Sociedad", tipo:"Revista", linea:"Centro-izquierda", web:"https://nuso.org", desc:"Análisis político y social. Fundación Ebert."},
   {pais:"Internacional", nombre:"Volcánicas", tipo:"Digital", linea:"Independiente", web:"https://volcanicas.com", desc:"Periodismo feminista latinoamericano."},
-  {pais:"Internacional", nombre:"Americas Quarterly", tipo:"Revista", linea:"Centro", web:"https://www.americasquarterly.org", desc:"Análisis sobre AL en inglés, del Americas Society."},
-  {pais:"Internacional", nombre:"RT en Español", tipo:"TV/Digital", linea:"Estatal", web:"https://actualidad.rt.com", desc:"Cadena rusa con cobertura en español, financiada por el Estado ruso."},
-  {pais:"Internacional", nombre:"Telesur", tipo:"TV/Digital", linea:"Estatal", web:"https://www.telesurtv.net", desc:"Multiestatal latinoamericano (Venezuela, Cuba, Nicaragua, Bolivia)."},
+  {pais:"Internacional", nombre:"Americas Quarterly", tipo:"Revista", linea:"Centro", web:"https://www.americasquarterly.org", desc:"Análisis sobre AL en inglés. Americas Society."},
+  {pais:"Internacional", nombre:"RT en Español", tipo:"TV/Digital", linea:"Estatal", web:"https://actualidad.rt.com", desc:"Cadena rusa en español."},
+  {pais:"Internacional", nombre:"Telesur", tipo:"TV/Digital", linea:"Estatal", web:"https://www.telesurtv.net", desc:"Multiestatal (Venezuela, Cuba, Nicaragua, Bolivia)."},
   {pais:"Internacional", nombre:"AP en Español", tipo:"Agencia", linea:"Centro", web:"https://apnews.com/hub/noticias", desc:"Associated Press, agencia estadounidense."},
   {pais:"Internacional", nombre:"AFP en Español", tipo:"Agencia", linea:"Centro", web:"https://www.afp.com/es", desc:"Agence France-Presse, agencia francesa."},
-  {pais:"Internacional", nombre:"Reuters América Latina", tipo:"Agencia", linea:"Centro", web:"https://www.reuters.com/world/americas/", desc:"Agencia británica, cobertura regional en inglés y español."}
+  {pais:"Internacional", nombre:"Reuters América Latina", tipo:"Agencia", linea:"Centro", web:"https://www.reuters.com/world/americas/", desc:"Agencia británica de referencia."},
+  // PODCASTS Y NEWSLETTERS
+  {pais:"Internacional", nombre:"Radio Ambulante", tipo:"Podcast", linea:"Independiente", web:"https://radioambulante.org", desc:"Storytelling narrativo latinoamericano. Producido por NPR."},
+  {pais:"Internacional", nombre:"El hilo", tipo:"Podcast", linea:"Independiente", web:"https://elhilo.audio", desc:"Radio Ambulante Studios. Contexto de una noticia semanal."},
+  {pais:"Chile", nombre:"Las Raras", tipo:"Podcast", linea:"Independiente", web:"https://lasraras.cl", desc:"Historias sonoras de todo el mundo hispano."},
+  {pais:"Colombia", nombre:"La No Ficción", tipo:"Podcast", linea:"Investigación", web:"https://lanoficcion.com", desc:"Periodismo narrativo colombiano en audio."},
+  {pais:"Colombia", nombre:"Presunto Podcast", tipo:"Podcast", linea:"Independiente", web:"https://presuntopodcast.com", desc:"Sobre el estado del periodismo colombiano."},
+  {pais:"Colombia", nombre:"Estación K", tipo:"Podcast", linea:"Centro", web:"https://open.spotify.com/show/estacionk", desc:"Análisis político colombiano semanal."},
+  {pais:"México", nombre:"Bien de verdad", tipo:"Podcast", linea:"Centro-izquierda", web:"https://aristeguinoticias.com/podcast", desc:"Podcast de Aristegui Noticias."},
+  {pais:"México", nombre:"Malaria", tipo:"Newsletter", linea:"Centro", web:"https://malaria.substack.com", desc:"Newsletter política mexicana."},
+  {pais:"Argentina", nombre:"Central (Cenital)", tipo:"Podcast", linea:"Centro", web:"https://cenital.com/central-podcast/", desc:"Podcast económico de Iván Weissman."},
+  {pais:"Argentina", nombre:"Anfibia Podcast", tipo:"Podcast", linea:"Centro-izquierda", web:"https://www.revistaanfibia.com/podcasts/", desc:"Larga forma sonora de Revista Anfibia."},
+  {pais:"Argentina", nombre:"Cenital newsletter", tipo:"Newsletter", linea:"Centro", web:"https://cenital.com", desc:"Boletín diario y semanales temáticos."},
+  {pais:"Argentina", nombre:"Cosecha Roja", tipo:"Digital", linea:"Centro-izquierda", web:"https://cosecharoja.org", desc:"Red de periodistas sobre violencia y crimen en AL."},
+  {pais:"Perú", nombre:"Convoca Radio", tipo:"Podcast", linea:"Investigación", web:"https://www.convoca.pe/podcasts", desc:"Podcasts de investigación de Convoca."},
+  {pais:"Chile", nombre:"Cositas de política", tipo:"Podcast", linea:"Centro", web:"https://open.spotify.com/show/cositas-de-politica", desc:"Análisis coyuntural chileno."},
+  {pais:"Internacional", nombre:"Podium Podcast", tipo:"Podcast", linea:"Centro", web:"https://www.podiumpodcast.com", desc:"Red de podcasts en español del Grupo PRISA."},
+  {pais:"Internacional", nombre:"Foco Económico", tipo:"Newsletter", linea:"Centro", web:"https://focoeconomico.org", desc:"Economistas de la región analizan política económica."},
+  {pais:"Internacional", nombre:"The Americas Quarterly Podcast", tipo:"Podcast", linea:"Centro", web:"https://www.americasquarterly.org/podcasts/", desc:"AS/COA. Entrevistas sobre política y economía latinoamericana."},
+  {pais:"México", nombre:"No hay tal cosa", tipo:"Podcast", linea:"Centro", web:"https://open.spotify.com/show/nohaytalcosa", desc:"Podcast político mexicano."},
+  {pais:"Argentina", nombre:"Bonvivir", tipo:"Newsletter", linea:"Centro", web:"https://bonvivir.substack.com", desc:"Newsletter cultural y de tendencias."}
 ];
- 
-// ===== APP =====
-const $ = id => document.getElementById(id);
+
+// Banderas por país
 const FLAGS = {
-  "Argentina":"🇦🇷","Bolivia":"🇧🇴","Brasil":"🇧🇷","Chile":"🇨🇱","Colombia":"🇨🇴",
-  "Costa Rica":"🇨🇷","Cuba":"🇨🇺","Ecuador":"🇪🇨","El Salvador":"🇸🇻","Guatemala":"🇬🇹",
-  "Honduras":"🇭🇳","México":"🇲🇽","Nicaragua":"🇳🇮","Panamá":"🇵🇦","Paraguay":"🇵🇾",
-  "Perú":"🇵🇪","Puerto Rico":"🇵🇷","R. Dominicana":"🇩🇴","Uruguay":"🇺🇾","Venezuela":"🇻🇪",
+  "Argentina":"🇦🇷","Bahamas":"🇧🇸","Barbados":"🇧🇧","Belice":"🇧🇿","Bolivia":"🇧🇴","Brasil":"🇧🇷","Chile":"🇨🇱","Colombia":"🇨🇴",
+  "Costa Rica":"🇨🇷","Cuba":"🇨🇺","Ecuador":"🇪🇨","El Salvador":"🇸🇻","Guatemala":"🇬🇹","Guyana":"🇬🇾",
+  "Haití":"🇭🇹","Honduras":"🇭🇳","Jamaica":"🇯🇲","México":"🇲🇽","Nicaragua":"🇳🇮","Panamá":"🇵🇦","Paraguay":"🇵🇾",
+  "Perú":"🇵🇪","Puerto Rico":"🇵🇷","R. Dominicana":"🇩🇴","Surinam":"🇸🇷","Trinidad y Tobago":"🇹🇹","Uruguay":"🇺🇾","Venezuela":"🇻🇪",
   "Internacional":"🌎"
 };
- 
+
+// ============ MAPA POLÍTICO ============
+// Proyección equirectangular simple para el SVG.
+// x = (lng + 120) * 8, y = (35 - lat) * 8. viewBox 720x820.
+function projX(lng) { return (lng + 120) * 8; }
+function projY(lat) { return (35 - lat) * 8; }
+
+// Coordenadas simplificadas [lng, lat] por país. No pretenden ser geográficamente exactas,
+// pero sí reconocibles y correctamente posicionadas.
+const COUNTRIES = {
+  "México": {pts:[[-117,32.5],[-108,31.5],[-104,29.5],[-100,26],[-97.5,25.8],[-97.5,22],[-94,18.5],[-91,18.5],[-90.5,21],[-88,21.6],[-86.7,21],[-88,18.7],[-90.5,17.8],[-92,15],[-94.5,16.5],[-96.5,15.5],[-99,16],[-102,17.5],[-105,19.5],[-107.5,22.5],[-110,23.5],[-113,25.5],[-114,29],[-117,32.5]], center:[-102,23]},
+  "Guatemala": {pts:[[-92,17.8],[-89.2,17.8],[-88.5,16.5],[-88.7,15.7],[-89.2,14.9],[-90.1,13.8],[-92.2,14.5],[-92,17.8]], center:[-90.4,15.7]},
+  "Belice": {pts:[[-89.2,18.5],[-88.1,18.5],[-88.2,17.2],[-88.9,15.9],[-89.2,17],[-89.2,18.5]], center:[-88.7,17.3]},
+  "Honduras": {pts:[[-89.4,16],[-83.2,15.5],[-83.5,13],[-85.5,13.2],[-87.5,13.1],[-89.4,14.5],[-89.4,16]], center:[-86.5,14.7]},
+  "El Salvador": {pts:[[-90.1,14.4],[-87.8,13.9],[-87.9,13.2],[-90,13.3],[-90.1,14.4]], center:[-88.9,13.7]},
+  "Nicaragua": {pts:[[-87.6,15],[-83.2,15],[-83.2,11],[-85,11],[-87.7,13],[-87.6,15]], center:[-85.2,12.9]},
+  "Costa Rica": {pts:[[-85.9,11],[-82.5,11],[-82.7,8.5],[-84.5,8.1],[-85.9,9.5],[-85.9,11]], center:[-84.2,9.9]},
+  "Panamá": {pts:[[-83,9.5],[-77,8.9],[-77.2,7.5],[-79,7.2],[-82.5,7.8],[-83,9.5]], center:[-80,8.5]},
+  "Cuba": {pts:[[-84.5,22.5],[-83,23.1],[-79,22.5],[-75,21.2],[-74,20.5],[-77,20],[-79,21.5],[-83,22],[-84.5,22.5]], center:[-79,21.8]},
+  "Haití": {pts:[[-74.5,20],[-71.7,19.9],[-71.7,18.5],[-73,18.1],[-74.5,18.3],[-74.5,20]], center:[-72.8,19]},
+  "R. Dominicana": {pts:[[-71.7,19.9],[-68.3,19.9],[-68.3,17.8],[-70,17.6],[-71.7,18.5],[-71.7,19.9]], center:[-70,18.8]},
+  "Puerto Rico": {pts:[[-67.3,18.5],[-65.6,18.5],[-65.6,17.9],[-67.3,17.9],[-67.3,18.5]], center:[-66.4,18.2]},
+  "Jamaica": {pts:[[-78.4,18.5],[-76.2,18.5],[-76.2,17.7],[-78.4,17.7],[-78.4,18.5]], center:[-77.3,18.1]},
+  "Bahamas": {pts:[[-79,27],[-77,27],[-73,25],[-73,22.5],[-77,22.5],[-79,24.5],[-79,27]], center:[-76,24.5]},
+  "Trinidad y Tobago": {pts:[[-61.95,11.35],[-60.5,11.35],[-60.5,10],[-61.95,10],[-61.95,11.35]], center:[-61.2,10.6]},
+  "Barbados": {pts:[[-59.7,13.35],[-59.4,13.35],[-59.4,13],[-59.7,13],[-59.7,13.35]], center:[-59.55,13.2]},
+  "Venezuela": {pts:[[-73,12],[-71,12.5],[-60,10.5],[-60,8],[-63.5,1],[-67.5,1.2],[-71,6.5],[-73,9],[-73,12]], center:[-66.5,7.5]},
+  "Colombia": {pts:[[-79,12],[-71,12.5],[-70,11],[-67.5,6],[-67.5,1.5],[-70,-4],[-75,-4],[-77.5,0.5],[-79,6],[-79,12]], center:[-73.5,4]},
+  "Ecuador": {pts:[[-81,1.5],[-75.5,0.5],[-75.5,-5],[-79.5,-5],[-81,-2.5],[-81,1.5]], center:[-78.5,-1.5]},
+  "Perú": {pts:[[-81,-4.5],[-72,-0.5],[-69,-12],[-70,-18.3],[-75,-18.3],[-81,-6.5],[-81,-4.5]], center:[-75,-10]},
+  "Bolivia": {pts:[[-69,-10],[-58,-9.8],[-58,-22.5],[-68,-22.5],[-69,-10]], center:[-64,-17]},
+  "Brasil": {pts:[[-73,5],[-60,5],[-51,4.5],[-44,-2],[-35,-5],[-38,-13],[-40,-20],[-48,-25],[-53,-33.5],[-58,-30],[-58,-20],[-64,-11],[-73,-9.5],[-73,5]], center:[-52,-11]},
+  "Paraguay": {pts:[[-62,-19.3],[-54.5,-20],[-54.5,-27],[-58,-27.5],[-62,-22],[-62,-19.3]], center:[-58,-23.4]},
+  "Uruguay": {pts:[[-58,-30],[-53.5,-30.5],[-53,-34.5],[-58,-34.7],[-58,-30]], center:[-56,-32.5]},
+  "Argentina": {pts:[[-68,-22],[-58,-25],[-57,-30],[-58,-35],[-58,-38],[-64,-40],[-66,-50],[-67.5,-55],[-71,-52],[-71,-40],[-69,-35],[-68,-22]], center:[-64,-36]},
+  "Chile": {pts:[[-71,-18],[-68,-22],[-70,-30],[-72,-40],[-74,-50],[-73,-55],[-70,-55],[-70,-48],[-72,-40],[-70,-30],[-70,-22],[-71,-18]], center:[-71.5,-38]},
+  "Guyana": {pts:[[-61.4,8.6],[-56.5,4],[-56.5,2],[-60,1.2],[-61.4,6],[-61.4,8.6]], center:[-59,5]},
+  "Surinam": {pts:[[-58,6],[-54,6],[-54,2],[-55.5,2],[-56.5,2.3],[-58,5],[-58,6]], center:[-56,4]}
+};
+
+function pathFromPoints(pts) {
+  return "M" + pts.map(p => `${projX(p[0]).toFixed(1)},${projY(p[1]).toFixed(1)}`).join(" L") + " Z";
+}
+
+// ============ ESTADO ============
 const STATE = {
   search: localStorage.getItem("mml_search") || "",
   pais: localStorage.getItem("mml_pais") || "",
@@ -641,9 +754,10 @@ const STATE = {
   fav: localStorage.getItem("mml_fav") || "",
   favs: JSON.parse(localStorage.getItem("mml_favs") || "[]")
 };
- 
-function uniq(arr) { return [...new Set(arr)].sort(); }
- 
+
+const $ = id => document.getElementById(id);
+function uniq(arr) { return [...new Set(arr)].sort((a,b)=>a.localeCompare(b,"es")); }
+
 function fillSelect(id, values, current) {
   const sel = $(id);
   values.forEach(v => {
@@ -653,11 +767,148 @@ function fillSelect(id, values, current) {
     sel.appendChild(o);
   });
 }
- 
-function lineaClass(l) {
-  return "linea-" + l.toLowerCase().replace(/\s+/g, "-").replace(/[áéíóú]/g, c => ({á:'á',é:'é',í:'í',ó:'ó',ú:'ú'}[c]));
+
+function lineaClass(l) { return "linea-" + l.toLowerCase().replace(/\s+/g,"-"); }
+function lineaColor(l) {
+  return {
+    "Izquierda":"#dc2626","Centro-izquierda":"#f97316","Centro":"#6b7280",
+    "Centro-derecha":"#3b82f6","Derecha":"#1e3a8a","Independiente":"#16a34a",
+    "Estatal":"#7c3aed","Investigación":"#ca8a04"
+  }[l] || "#6b7280";
 }
- 
+
+function countByCountry() {
+  const c = {};
+  MEDIOS.forEach(m => c[m.pais] = (c[m.pais]||0) + 1);
+  return c;
+}
+
+function densityColor(n, max) {
+  if (!n) return "var(--land-0)";
+  const r = n / max;
+  if (r > 0.75) return "var(--land-4)";
+  if (r > 0.5) return "var(--land-3)";
+  if (r > 0.25) return "var(--land-2)";
+  return "var(--land-1)";
+}
+function densityIsDark(n, max) {
+  if (!n) return false;
+  return (n / max) > 0.5;
+}
+
+// ============ RENDER MAPA ============
+function renderMap() {
+  const svg = $("map-svg");
+  svg.innerHTML = "";
+  const counts = countByCountry();
+  const max = Math.max(...Object.values(counts));
+
+  // Excluir Internacional del mapa (no tiene ubicación geográfica)
+  const countryNames = Object.keys(COUNTRIES);
+
+  countryNames.forEach(pais => {
+    const c = counts[pais] || 0;
+    const shape = COUNTRIES[pais];
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("data-pais", pais);
+    g.style.cursor = "pointer";
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", pathFromPoints(shape.pts));
+    path.setAttribute("class", "country" + (STATE.pais === pais ? " active" : ""));
+    path.setAttribute("fill", densityColor(c, max));
+
+    const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+    title.textContent = `${pais} — ${c} medio${c===1?"":"s"}. Clic para ver ficha.`;
+    path.appendChild(title);
+    g.appendChild(path);
+
+    // Etiqueta con nombre y contador
+    const cx = projX(shape.center[0]);
+    const cy = projY(shape.center[1]);
+    const dark = densityIsDark(c, max);
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("class", "country-label" + (dark ? " dark" : ""));
+    label.setAttribute("x", cx);
+    label.setAttribute("y", cy - 3);
+    label.textContent = pais.length > 12 ? pais.substring(0,10)+"…" : pais;
+    g.appendChild(label);
+
+    if (c > 0) {
+      const cnt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      cnt.setAttribute("class", "country-count" + (dark ? " dark" : ""));
+      cnt.setAttribute("x", cx);
+      cnt.setAttribute("y", cy + 9);
+      cnt.textContent = `${c} medio${c===1?"":"s"}`;
+      g.appendChild(cnt);
+    }
+
+    g.addEventListener("click", () => selectCountry(pais));
+    svg.appendChild(g);
+  });
+}
+
+function selectCountry(pais) {
+  if (STATE.pais === pais) {
+    STATE.pais = "";
+    localStorage.removeItem("mml_pais");
+    closeSidePanel();
+  } else {
+    STATE.pais = pais;
+    localStorage.setItem("mml_pais", pais);
+    openSidePanel(pais);
+  }
+  $("f-pais").value = STATE.pais;
+  renderMap();
+  render();
+}
+
+// ============ PANEL LATERAL ============
+function openSidePanel(pais) {
+  const list = MEDIOS.filter(m => m.pais === pais);
+  $("side-title").innerHTML = `${FLAGS[pais]||"📰"} ${pais}`;
+  $("side-summary").textContent = `${list.length} medio${list.length===1?"":"s"} indexados. Distribución por línea editorial:`;
+  $("side-count").textContent = list.length;
+
+  // Gráfico de barras horizontal (línea editorial)
+  const byLinea = {};
+  list.forEach(m => byLinea[m.linea] = (byLinea[m.linea]||0) + 1);
+  const total = list.length;
+  const chart = $("side-chart");
+  chart.innerHTML = "";
+  const legend = $("side-chart-legend");
+  legend.innerHTML = "";
+  Object.entries(byLinea).sort((a,b)=>b[1]-a[1]).forEach(([linea, n]) => {
+    const pct = (n/total)*100;
+    const seg = document.createElement("div");
+    seg.style.cssText = `width:${pct}%;background:${lineaColor(linea)};`;
+    seg.title = `${linea}: ${n} (${pct.toFixed(0)}%)`;
+    chart.appendChild(seg);
+    const lg = document.createElement("span");
+    lg.innerHTML = `<i style="background:${lineaColor(linea)}"></i>${linea} (${n})`;
+    legend.appendChild(lg);
+  });
+
+  // Lista de medios
+  const listDiv = $("side-list");
+  listDiv.innerHTML = "";
+  list.sort((a,b)=>a.nombre.localeCompare(b.nombre,"es")).forEach(m => {
+    const div = document.createElement("div");
+    div.className = "side-item";
+    div.innerHTML = `
+      <a href="${m.web}" target="_blank" rel="noopener">${m.nombre}</a>
+      <span class="tag ${lineaClass(m.linea)}">${m.linea}</span>
+    `;
+    listDiv.appendChild(div);
+  });
+
+  $("side-panel").classList.add("open");
+}
+function closeSidePanel() {
+  $("side-panel").classList.remove("open");
+}
+
+// ============ RENDER LISTA ============
 function render() {
   const q = STATE.search.toLowerCase().trim();
   const filtered = MEDIOS.filter(m => {
@@ -671,16 +922,16 @@ function render() {
     }
     return true;
   });
- 
-  $("count").textContent = `${filtered.length} medio${filtered.length === 1 ? "" : "s"} · ${uniq(filtered.map(m=>m.pais)).length} país${uniq(filtered.map(m=>m.pais)).length === 1 ? "" : "es"}`;
- 
+
+  const paisesResultado = uniq(filtered.map(m=>m.pais)).length;
+  $("count").textContent = `${filtered.length} medio${filtered.length===1?"":"s"} · ${paisesResultado} país${paisesResultado===1?"":"es"}`;
+
   const results = $("results");
   results.innerHTML = "";
   if (filtered.length === 0) {
     results.innerHTML = '<div class="empty">No hay medios que coincidan con los filtros.</div>';
     return;
   }
-  // Group by country
   const byPais = {};
   filtered.forEach(m => { (byPais[m.pais] = byPais[m.pais] || []).push(m); });
   const paises = Object.keys(byPais).sort((a,b) => {
@@ -693,7 +944,7 @@ function render() {
     sec.className = "country-section";
     const title = document.createElement("h2");
     title.className = "country-title";
-    title.innerHTML = `<span class="country-flag">${FLAGS[pais]||"📰"}</span> ${pais} <span class="country-count">· ${byPais[pais].length}</span>`;
+    title.innerHTML = `<span class="country-flag">${FLAGS[pais]||"📰"}</span> ${pais} <span class="country-count-sec">· ${byPais[pais].length}</span>`;
     sec.appendChild(title);
     const grid = document.createElement("div");
     grid.className = "grid";
@@ -704,7 +955,7 @@ function render() {
       card.innerHTML = `
         <div class="card-header">
           <h3 class="card-name"><a href="${m.web}" target="_blank" rel="noopener">${m.nombre}</a></h3>
-          <button class="fav ${isFav?"active":""}" data-name="${m.nombre.replace(/"/g,'&quot;')}" title="Marcar favorito">${isFav?"★":"☆"}</button>
+          <button class="fav ${isFav?"active":""}" data-name="${m.nombre.replace(/"/g,'&quot;')}">${isFav?"★":"☆"}</button>
         </div>
         <div class="card-tags">
           <span class="tag">${m.tipo}</span>
@@ -717,10 +968,9 @@ function render() {
     sec.appendChild(grid);
     results.appendChild(sec);
   });
- 
-  // Wire fav buttons
+
   results.querySelectorAll(".fav").forEach(btn => {
-    btn.addEventListener("click", e => {
+    btn.addEventListener("click", () => {
       const n = btn.getAttribute("data-name");
       if (STATE.favs.includes(n)) STATE.favs = STATE.favs.filter(x=>x!==n);
       else STATE.favs.push(n);
@@ -729,83 +979,23 @@ function render() {
     });
   });
 }
- 
-// ===== MAP =====
-// Posiciones aproximadas (geográficamente ubicadas, no escala real)
-const MAP_POSITIONS = {
-  "México":        {x: 180, y: 90,  code: "MX"},
-  "Cuba":          {x: 340, y: 130, code: "CU"},
-  "Guatemala":     {x: 170, y: 200, code: "GT"},
-  "El Salvador":   {x: 170, y: 270, code: "SV"},
-  "Honduras":      {x: 250, y: 200, code: "HN"},
-  "Nicaragua":     {x: 250, y: 270, code: "NI"},
-  "Costa Rica":    {x: 210, y: 340, code: "CR"},
-  "Panamá":        {x: 290, y: 340, code: "PA"},
-  "R. Dominicana": {x: 420, y: 170, code: "DO"},
-  "Puerto Rico":   {x: 500, y: 200, code: "PR"},
-  "Venezuela":     {x: 440, y: 340, code: "VE"},
-  "Colombia":      {x: 360, y: 420, code: "CO"},
-  "Ecuador":       {x: 320, y: 500, code: "EC"},
-  "Perú":          {x: 360, y: 580, code: "PE"},
-  "Bolivia":       {x: 450, y: 600, code: "BO"},
-  "Brasil":        {x: 550, y: 540, code: "BR"},
-  "Paraguay":      {x: 470, y: 700, code: "PY"},
-  "Chile":         {x: 380, y: 760, code: "CL"},
-  "Argentina":     {x: 460, y: 800, code: "AR"},
-  "Uruguay":       {x: 560, y: 800, code: "UY"},
-  "Internacional": {x: 620, y: 80,  code: "INT"}
-};
-const TILE_W = 70, TILE_H = 70;
- 
-function renderMap() {
-  const g = document.getElementById("map-tiles");
-  g.innerHTML = "";
-  // Count per country
-  const counts = {};
-  MEDIOS.forEach(m => counts[m.pais] = (counts[m.pais]||0) + 1);
- 
-  Object.entries(MAP_POSITIONS).forEach(([pais, pos]) => {
-    const c = counts[pais] || 0;
-    const active = STATE.pais === pais;
-    const flag = FLAGS[pais] || "📰";
-    const tile = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    tile.setAttribute("class", "map-tile" + (active ? " active" : ""));
-    tile.setAttribute("data-pais", pais);
-    tile.innerHTML = `
-      <rect x="${pos.x}" y="${pos.y}" width="${TILE_W}" height="${TILE_H}" rx="8"/>
-      <text class="map-flag" x="${pos.x + TILE_W/2}" y="${pos.y + 22}">${flag}</text>
-      <text class="map-code" x="${pos.x + TILE_W/2}" y="${pos.y + 44}">${pos.code}</text>
-      <text class="map-count" x="${pos.x + TILE_W/2}" y="${pos.y + 60}">${c} medio${c===1?"":"s"}</text>
-      <title>${pais} — ${c} medio${c===1?"":"s"}. Clic para filtrar.</title>
-    `;
-    tile.addEventListener("click", () => {
-      // Toggle filter
-      if (STATE.pais === pais) {
-        STATE.pais = "";
-        localStorage.removeItem("mml_pais");
-      } else {
-        STATE.pais = pais;
-        localStorage.setItem("mml_pais", pais);
-      }
-      document.getElementById("f-pais").value = STATE.pais;
-      renderMap();
-      render();
-      // Scroll to results
-      document.querySelector(".stats").scrollIntoView({behavior:"smooth", block:"start"});
-    });
-    g.appendChild(tile);
-  });
-}
- 
+
+// ============ INIT ============
 function init() {
   fillSelect("f-pais", uniq(MEDIOS.map(m=>m.pais)), STATE.pais);
   fillSelect("f-linea", uniq(MEDIOS.map(m=>m.linea)), STATE.linea);
   fillSelect("f-tipo", uniq(MEDIOS.map(m=>m.tipo)), STATE.tipo);
   $("search").value = STATE.search;
   $("f-fav").value = STATE.fav;
- 
+
   $("search").addEventListener("input", e => { STATE.search = e.target.value; localStorage.setItem("mml_search", STATE.search); render(); });
-  $("f-pais").addEventListener("change", e => { STATE.pais = e.target.value; localStorage.setItem("mml_pais", STATE.pais); renderMap(); render(); });
+  $("f-pais").addEventListener("change", e => {
+    STATE.pais = e.target.value;
+    localStorage.setItem("mml_pais", STATE.pais);
+    renderMap();
+    if (STATE.pais && COUNTRIES[STATE.pais]) openSidePanel(STATE.pais); else closeSidePanel();
+    render();
+  });
   $("f-linea").addEventListener("change", e => { STATE.linea = e.target.value; localStorage.setItem("mml_linea", STATE.linea); render(); });
   $("f-tipo").addEventListener("change", e => { STATE.tipo = e.target.value; localStorage.setItem("mml_tipo", STATE.tipo); render(); });
   $("f-fav").addEventListener("change", e => { STATE.fav = e.target.value; localStorage.setItem("mml_fav", STATE.fav); render(); });
@@ -813,29 +1003,39 @@ function init() {
     STATE.search = STATE.pais = STATE.linea = STATE.tipo = STATE.fav = "";
     ["mml_search","mml_pais","mml_linea","mml_tipo","mml_fav"].forEach(k=>localStorage.removeItem(k));
     $("search").value = ""; $("f-pais").value = ""; $("f-linea").value = ""; $("f-tipo").value = ""; $("f-fav").value = "";
+    closeSidePanel();
     renderMap();
     render();
   });
- 
-  // Map toggle
+
+  $("side-close").addEventListener("click", () => {
+    STATE.pais = "";
+    localStorage.removeItem("mml_pais");
+    $("f-pais").value = "";
+    closeSidePanel();
+    renderMap();
+    render();
+  });
+
+  // Toggle mapa
   const mapCollapsed = localStorage.getItem("mml_map_hidden") === "1";
   if (mapCollapsed) {
-    document.getElementById("map-wrap").classList.add("collapsed");
-    document.getElementById("map-toggle").textContent = "Mostrar mapa";
+    $("map-wrap").classList.add("collapsed");
+    $("map-toggle").textContent = "Mostrar mapa";
   }
-  document.getElementById("map-toggle").addEventListener("click", () => {
-    const w = document.getElementById("map-wrap");
-    const b = document.getElementById("map-toggle");
+  $("map-toggle").addEventListener("click", () => {
+    const w = $("map-wrap"), b = $("map-toggle");
     w.classList.toggle("collapsed");
     const hidden = w.classList.contains("collapsed");
     b.textContent = hidden ? "Mostrar mapa" : "Ocultar mapa";
     localStorage.setItem("mml_map_hidden", hidden ? "1" : "0");
   });
- 
+
   renderMap();
   render();
+  if (STATE.pais && COUNTRIES[STATE.pais]) openSidePanel(STATE.pais);
 }
- 
+
 init();
 </script>
 </body>
