@@ -151,8 +151,10 @@
     height: 640px;
     border-radius: 8px;
     border: 1px solid var(--border);
+    background: #e0f2fe;
     z-index: 1;
   }
+  .leaflet-container { background: #e0f2fe !important; }
   .leaflet-tooltip {
     font-family: -apple-system, sans-serif !important;
     font-size: 12px !important;
@@ -764,10 +766,9 @@ async function initLeafletMap() {
     scrollWheelZoom: false,
     worldCopyJump: true
   });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://openstreetmap.org">OSM</a> © <a href="https://carto.com/">CARTO</a>',
-    subdomains: 'abcd', maxZoom: 19
-  }).addTo(leafletMap);
+  // Sin tiles: fondo azul-mar limpio, mejor rendimiento y sin dependencias externas.
+  // Si en el futuro quieres tiles, hay opciones libres: OpenStreetMap
+  // ('https://tile.openstreetmap.org/{z}/{x}/{y}.png') u OpenTopoMap.
 
   try {
     const resp = await fetch('https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json');
